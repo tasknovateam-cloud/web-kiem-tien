@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Kiếm Tiền Online</title>
+    <style>
+        * { box-sizing: border-box; font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        body { background: #f4f6f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 350px; }
+        h2 { text-align: center; margin-bottom: 20px; color: #333; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; outline: none; }
+        button { width: 100%; padding: 12px; background: #28a745; border: none; color: white; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        button:hover { background: #218838; }
+        .toggle-btn { text-align: center; margin-top: 15px; font-size: 14px; color: #007bff; cursor: pointer; }
+        #message { margin-top: 15px; text-align: center; font-size: 14px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2 id="form-title">Đăng Nhập</h2>
+    
+    <div class="form-group">
+        <label>Tên đăng nhập / Email</label>
+        <input type="text" id="username" placeholder="Nhập username...">
+    </div>
+    
+    <div class="form-group">
+        <label>Mật khẩu</label>
+        <input type="password" id="password" placeholder="Nhập mật khẩu...">
+    </div>
+
+    <button id="submit-btn" onclick="handleSubmit()">Đăng Nhập</button>
+
+    <div class="toggle-btn" onclick="toggleForm()" id="toggle-text">
+        Chưa có tài khoản? Đăng ký ngay
+    </div>
+
+    <div id="message"></div>
+</div>
+
+<script>
+    // Đường link Backend Render 24/7 của bạn
+    const API_URL = "https://web-kiem-tien-alom.onrender.com"; 
+    let isLogin = true;
+
+    function toggleForm() {
+        isLogin = !isLogin;
+        document.getElementById("form-title").innerText = isLogin ? "Đăng Nhập" : "Đăng Ký";
+        document.getElementById("submit-btn").innerText = isLogin ? "Đăng Nhập" : "Đăng Ký";
+        document.getElementById("toggle-text").innerText = isLogin 
+            ? "Chưa có tài khoản? Đăng ký ngay" 
+            : "Đã có tài khoản? Đăng nhập";
+        document.getElementById("message").innerText = "";
+    }
+
+    async function handleSubmit() {
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const msgDiv = document.getElementById("message");
+
+        if (!username || !password) {
+            msgDiv.style.color = "red";
+            msgDiv.innerText = "Vui lòng điền đầy đủ thông tin!";
+            return;
+        }
+
+        const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
+
+        try {
+            msgDiv.style.color = "orange";
+            msgDiv.innerText = "Đang xử lý...";
+
+            const res = await fetch(API_URL + endpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                msgDiv.style.color = "green";
+                msgDiv.innerText = isLogin ? "Đăng nhập thành công!" : "Đăng ký thành công!";
+                
+                // Nếu đăng nhập thành công thì lưu Token
+                if (data.token) {
+                    localStorage.setItem("token", data.token);
+                }
+            } else {
+                msgDiv.style.color = "red";
+                msgDiv.innerText = data.message || "Có lỗi xảy ra!";
+            }
+        } catch (err) {
+            msgDiv.style.color = "red";
+            msgDiv.innerText = "Lỗi kết nối tới Server!";
+        }
+    }
+</script>
+
+</body>
+</html>
