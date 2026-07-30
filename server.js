@@ -13,14 +13,18 @@ const GOOGLE_CLIENT_ID = '1092262111091-dafa4j9otpil74ptqbemda4bbn2j9a1i.apps.go
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 const JWT_SECRET = 'bi_mat_khong_the_tiet_lo_123';
 
-// Kết nối MongoDB tự động lấy từ Render Environment Variables
+// Kết nối MongoDB (sử dụng chuỗi kết nối đã lưu trên Render)
 const MONGODB_URI = process.env.MONGODB_URI;
 
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log('Đã kết nối MongoDB thành công!'))
-  .catch(err => console.error('Lỗi kết nối MongoDB:', err));
+if (MONGODB_URI) {
+  mongoose.connect(MONGODB_URI)
+    .then(() => console.log('Đã kết nối thành công với MongoDB Cloud!'))
+    .catch(err => console.error('Lỗi kết nối MongoDB:', err));
+} else {
+  console.error('CẢNH BÁO: Chưa tìm thấy biến MONGODB_URI trong Environment của Render!');
+}
 
-// Model User trong MongoDB
+// Schema User
 const userSchema = new mongoose.Schema({
   username: { type: String, unique: true, sparse: true },
   password: { type: String },
@@ -35,7 +39,7 @@ const User = mongoose.model('User', userSchema);
 
 // ---------------- API ENDPOINTS ----------------
 
-// 1. API Đăng ký truyền thống
+// 1. API Đăng ký thường
 app.post('/api/register', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -59,7 +63,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// 2. API Đăng nhập truyền thống
+// 2. API Đăng nhập thường
 app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -81,7 +85,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// 3. API Đăng nhập / Đăng ký bằng GOOGLE
+// 3. API Đăng nhập / Đăng ký bằng Google
 app.post('/api/google-login', async (req, res) => {
   try {
     const { token } = req.body;
@@ -122,8 +126,7 @@ app.post('/api/google-login', async (req, res) => {
   }
 });
 
-// Phục vụ file giao diện
-// MỚI (ĐÃ SỬA)
+// Route phục vụ giao diện trang web (Tương thích Express v5)
 app.get('{*path}', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
