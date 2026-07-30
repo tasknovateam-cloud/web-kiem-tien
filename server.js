@@ -123,7 +123,8 @@ app.post('/api/google-login', async (req, res) => {
 });
 
 // Phục vụ file giao diện
-app.get('*', (req, res) => {
+// MỚI (ĐÃ SỬA)
+app.get('{*path}', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
