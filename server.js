@@ -11,17 +11,17 @@ app.use(express.static(path.join(__dirname)));
 
 const GOOGLE_CLIENT_ID = '1092262111091-dafa4j9otpil74ptqbemda4bbn2j9a1i.apps.googleusercontent.com';
 const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
-const JWT_SECRET = 'bi_mat_khong_the_tiet_lo_123';
+const JWT_SECRET = process.env.SECRET_KEY || 'bi_mat_khong_the_tiet_lo_123';
 
-// Kết nối MongoDB (sử dụng chuỗi kết nối đã lưu trên Render)
-const MONGODB_URI = process.env.MONGODB_URI;
+// Kết nối MongoDB theo tên biến MONGO_URI trên Render
+const MONGO_URI = process.env.MONGO_URI;
 
-if (MONGODB_URI) {
-  mongoose.connect(MONGODB_URI)
+if (MONGO_URI) {
+  mongoose.connect(MONGO_URI)
     .then(() => console.log('Đã kết nối thành công với MongoDB Cloud!'))
     .catch(err => console.error('Lỗi kết nối MongoDB:', err));
 } else {
-  console.error('CẢNH BÁO: Chưa tìm thấy biến MONGODB_URI trong Environment của Render!');
+  console.error('CẢNH BÁO: Chưa tìm thấy biến MONGO_URI trong Environment!');
 }
 
 // Schema User
