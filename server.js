@@ -1,16 +1,16 @@
-const dns = require('dns');
-dns.setDefaultResultOrder('ipv4first'); // Ép Node.js luôn ưu tiên phân giải IPv4
-
 const express = require('express');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const nodemailer = require('nodemailer');
 const path = require('path');
+const { Resend } = require('resend');
 
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
+
+// Khởi tạo Resend API Client
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // 1. Kết nối MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -31,21 +31,7 @@ const User = mongoose.model('User', userSchema);
 // Lưu tạm OTP trong bộ nhớ (Email -> { otp, username, password, expires })
 const otpStore = new Map();
 
-// 3. Cấu hình Nodemailer gửi mail qua Gmail (IPv4)
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-  tls: {
-    rejectUnauthorized: false
-  }
-});
-
-// API: Gửi mã OTP về Gmail
+// API: Gửi mã OTP qua Resend HTTPS API
 app.post('/api/send-otp', async (req, res) => {
   try {
     const { username, password, email } = req.body;
@@ -54,16 +40,13 @@ app.post('/api/send-otp', async (req, res) => {
       return res.status(400).json({ error: 'Vui lòng điền đầy đủ thông tin!' });
     }
 
-    // Kiểm tra username hoặc email đã tồn tại chưa
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
       return res.status(400).json({ error: 'Tên đăng nhập hoặc Email đã được sử dụng!' });
     }
 
-    // Tạo mã OTP 6 chữ số
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Lưu thông tin tạm thời (hết hạn sau 5 phút)
     otpStore.set(email, {
       username,
       password,
@@ -71,10 +54,10 @@ app.post('/api/send-otp', async (req, res) => {
       expires: Date.now() + 5 * 60 * 1000
     });
 
-    // Nội dung Email OTP
-    const mailOptions = {
-      from: `"TaskNova Support" <${process.env.EMAIL_USER}>`,
-      to: email,
+    // Gửi email bằng Resend API
+    const { data, error } = await resend.emails.send({
+      from: 'TaskNova Support <onboarding@resend.dev>',
+      to: [email],
       subject: 'Mã xác thực OTP đăng ký tài khoản TaskNova',
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
@@ -89,9 +72,13 @@ app.post('/api/send-otp', async (req, res) => {
           </div>
         </div>
       `
-    };
+    });
 
-    await transporter.sendMail(mailOptions);
+    if (error) {
+      console.error('Lỗi Resend API:', error);
+      return res.status(500).json({ error: 'Lỗi gửi email từ Resend!' });
+    }
+
     res.json({ message: 'Mã OTP đã được gửi về Gmail của bạn!' });
 
   } catch (err) {
@@ -119,7 +106,6 @@ app.post('/api/verify-otp', async (req, res) => {
       return res.status(400).json({ error: 'Mã OTP không chính xác!' });
     }
 
-    // Mã hóa mật khẩu và tạo user mới trong CSDL
     const hashedPassword = await bcrypt.hash(record.password, 10);
     const newUser = new User({
       username: record.username,
@@ -131,7 +117,6 @@ app.post('/api/verify-otp', async (req, res) => {
     await newUser.save();
     otpStore.delete(email);
 
-    // Tạo JWT Token
     const token = jwt.sign(
       { userId: newUser._id, username: newUser.username },
       process.env.SECRET_KEY || 'defaultsecretkey',
@@ -183,12 +168,10 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Phục vụ giao diện trang chủ
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Chạy Server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server đang chạy tại port ${PORT}`);
