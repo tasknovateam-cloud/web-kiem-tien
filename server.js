@@ -21,15 +21,20 @@ if (MONGO_URI) {
 }
 
 // Cấu hình gửi Mail qua Gmail Nodemailer
-// ĐOẠN MỚI (DÙNG CỔNG 465 SSL ĐỂ KHÔNG BỊ RENDER CHẶN):
+// Cấu hình gửi Mail qua Gmail Nodemailer chuẩn cho Render (Cổng 587 TLS)
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
+  port: 587,
+  secure: false, // Bắt buộc false cho cổng 587
+  requireTLS: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
-  }
+  },
+  tls: {
+    rejectUnauthorized: false
+  },
+  connectionTimeout: 10000 // Tăng timeout lên 10 giây
 });
 
 // Bộ nhớ tạm lưu OTP
