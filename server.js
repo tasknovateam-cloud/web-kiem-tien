@@ -21,20 +21,19 @@ if (MONGO_URI) {
 }
 
 // Cấu hình gửi Mail qua Gmail Nodemailer
-// Cấu hình gửi Mail qua Gmail Nodemailer chuẩn cho Render (Cổng 587 TLS)
+// Cấu hình Nodemailer chuẩn cho Render (Ép buộc dùng IPv4)
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 587,
   secure: false, // Bắt buộc false cho cổng 587
-  requireTLS: true,
+  family: 4,     // ÉP NGUYÊN NÚT DÙNG IPV4 (Sửa triệt để lỗi ENETUNREACH)
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   },
   tls: {
     rejectUnauthorized: false
-  },
-  connectionTimeout: 10000 // Tăng timeout lên 10 giây
+  }
 });
 
 // Bộ nhớ tạm lưu OTP
