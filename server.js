@@ -1,18 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { OAuth2Client } = require('google-auth-library');
+const nodemailer = require('nodemailer');
 const path = require('path');
 
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
-const GOOGLE_CLIENT_ID = '1092262111091-dafa4j9otpil74ptqbemda4bbn2j9a1i.apps.googleusercontent.com';
-const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 const JWT_SECRET = process.env.SECRET_KEY || 'bi_mat_khong_the_tiet_lo_123';
-
-// Kết nối MongoDB Cloud
 const MONGO_URI = process.env.MONGO_URI;
 
 if (MONGO_URI) {
@@ -20,16 +17,27 @@ if (MONGO_URI) {
     .then(() => console.log('Đã kết nối thành công với MongoDB Cloud!'))
     .catch(err => console.error('Lỗi kết nối MongoDB:', err));
 } else {
-  console.error('CẢNH BÁO: Chưa tìm thấy biến MONGO_URI trong Environment!');
+  console.error('CẢNH BÁO: Chưa tìm thấy biến MONGO_URI!');
 }
 
-// Schema User (Gọn nhẹ chỉ lưu dữ liệu từ Google)
+// Cấu hình gửi Mail qua Gmail Nodemailer
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+// Bộ nhớ tạm lưu OTP
+const otpStore = {}; 
+
+// Schema User
 const userSchema = new mongoose.Schema({
-  googleId: { type: String, unique: true, required: true },
+  username: { type: String, unique: true, required: true },
+  password: { type: String, required: true },
   email: { type: String, unique: true, required: true },
-  name: { type: String },
-  avatar: { type: String },
-  balance: { type: Number, default: 0 }, // Số dư tiền tệ cho TaskNova
+  balance: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -37,52 +45,124 @@ const User = mongoose.model('User', userSchema);
 
 // ---------------- API ENDPOINTS ----------------
 
-// API Duy nhất: Đăng nhập / Đăng ký qua Google
-app.post('/api/google-login', async (req, res) => {
+// 1. Gửi OTP đến Gmail
+app.post('/api/send-otp', async (req, res) => {
   try {
-    const { token } = req.body;
-    const ticket = await googleClient.verifyIdToken({
-      idToken: token,
-      audience: GOOGLE_CLIENT_ID,
-    });
-    const payload = ticket.getPayload();
-    const { sub: googleId, email, name, picture } = payload;
+    const { username, password, email } = req.body;
 
-    // Tìm hoặc tạo mới người dùng
-    let user = await User.findOne({ googleId });
-
-    if (!user) {
-      user = new User({
-        googleId,
-        email,
-        name,
-        avatar: picture
-      });
-      await user.save();
-      console.log(`Tạo tài khoản mới thành công: ${email}`);
+    if (!username || !password || !email) {
+      return res.status(400).json({ error: 'Vui lòng điền đầy đủ thông tin!' });
     }
 
-    // Tạo JWT Token cho phiên đăng nhập
-    const authToken = jwt.sign({ userId: user._id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    if (existingUser) {
+      return res.status(400).json({ error: 'Tên đăng nhập hoặc Email đã tồn tại!' });
+    }
 
-    res.json({
-      message: 'Đăng nhập Google thành công!',
-      token: authToken,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        avatar: user.avatar,
-        balance: user.balance
-      }
-    });
+    // Tạo mã OTP 6 số
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Lưu thông tin tạm thời trong 5 phút
+    otpStore[email] = { username, password: hashedPassword, otp, expiresAt: Date.now() + 5 * 60 * 1000 };
+
+    // Gửi mail
+    const mailOptions = {
+      from: `"TaskNova System" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Mã xác thực OTP đăng ký TaskNova',
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #0f172a; color: #ffffff; border-radius: 10px;">
+          <h2 style="color: #38bdf8;">Xác thực tài khoản TaskNova</h2>
+          <p>Mã OTP của bạn là: <b style="font-size: 24px; color: #4ade80;">${otp}</b></p>
+          <p>Mã này có hiệu lực trong vòng 5 phút. Vui lòng không chia sẻ mã này cho ai.</p>
+        </div>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.json({ message: 'Mã OTP đã được gửi về Gmail của bạn!' });
+
   } catch (error) {
-    console.error('Google Auth Error:', error);
-    res.status(400).json({ error: 'Xác thực Google thất bại!' });
+    console.error('Lỗi gửi OTP:', error);
+    res.status(500).json({ error: 'Không thể gửi email OTP. Kiểm tra lại địa chỉ Gmail!' });
   }
 });
 
-// Route phục vụ giao diện trang web (Tương thích Express v5)
+// 2. Xác thực OTP & Tạo tài khoản
+app.post('/api/verify-otp', async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const record = otpStore[email];
+
+    if (!record) {
+      return res.status(400).json({ error: 'Yêu cầu không hợp lệ hoặc đã hết hạn!' });
+    }
+
+    if (Date.now() > record.expiresAt) {
+      delete otpStore[email];
+      return res.status(400).json({ error: 'Mã OTP đã hết hạn!' });
+    }
+
+    if (record.otp !== otp) {
+      return res.status(400).json({ error: 'Mã OTP không chính xác!' });
+    }
+
+    // Tạo tài khoản chính thức vào DB
+    const newUser = new User({
+      username: record.username,
+      password: record.password,
+      email: email
+    });
+
+    await newUser.save();
+    delete otpStore[email];
+
+    const token = jwt.sign({ userId: newUser._id, username: newUser.username }, JWT_SECRET, { expiresIn: '7d' });
+
+    res.json({
+      message: 'Đăng ký thành công!',
+      token,
+      user: { name: newUser.username, email: newUser.email, balance: newUser.balance }
+    });
+
+  } catch (error) {
+    console.error('Lỗi xác thực:', error);
+    res.status(500).json({ error: 'Đã có lỗi xảy ra trên máy chủ!' });
+  }
+});
+
+// 3. Đăng nhập với Username & Password
+app.post('/api/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Vui lòng điền Tên đăng nhập và Mật khẩu!' });
+    }
+
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(400).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng!' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng!' });
+    }
+
+    const token = jwt.sign({ userId: user._id, username: user.username }, JWT_SECRET, { expiresIn: '7d' });
+
+    res.json({
+      message: 'Đăng nhập thành công!',
+      token,
+      user: { name: user.username, email: user.email, balance: user.balance }
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Lỗi máy chủ!' });
+  }
+});
+
 app.get('{*path}', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
