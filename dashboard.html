@@ -10,12 +10,6 @@
   <style>
     body {
       background-color: #050614;
-      /* NỀN GIF SAO BĂNG SIÊU MƯỢT HOÀN TOÀN KHÔNG CÓ YOUTUBE */
-      background-image: linear-gradient(rgba(5, 6, 20, 0.75), rgba(5, 6, 20, 0.85)), 
-                        url('https://i.imgur.com/8Q9Z4X3.gif');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
       color: #e2e8f0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       min-height: 100vh;
@@ -50,26 +44,12 @@
     }
 
     .galaxy-card {
-      background: rgba(15, 23, 42, 0.82);
-      backdrop-filter: blur(12px);
+      background: rgba(15, 23, 42, 0.95);
       border: 1px solid rgba(56, 189, 248, 0.2);
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
     }
     .neon-text {
       text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
-    }
-    .neon-btn {
-      background: linear-gradient(135deg, #0284c7, #6366f1);
-      box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
-    }
-
-    .tab-content {
-      animation: fadeInSlideUp 0.3s ease forwards;
-    }
-
-    @keyframes fadeInSlideUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -107,22 +87,16 @@
         <button onclick="switchTab('withdraw')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-slate-800/60 hover:text-cyan-400">
           <i class="fa-solid fa-wallet w-5"></i> Rút tiền
         </button>
-        <button onclick="switchTab('history')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-slate-800/60 hover:text-cyan-400">
-          <i class="fa-solid fa-clock-rotate-left w-5"></i> Lịch sử & Chuỗi
-        </button>
-        <button onclick="switchTab('leaderboard')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-slate-800/60 hover:text-cyan-400">
-          <i class="fa-solid fa-trophy w-5"></i> Bảng xếp hạng
-        </button>
       </nav>
     </div>
 
-    <!-- KHU VỰC TÊN & EMAIL NGƯỜI DÙNG (ĐÃ FIX CHÍNH XÁC EMAIL) -->
-    <div class="pt-5 border-t border-slate-800/80 flex items-center justify-between">
+    <!-- KHU VỰC THÔNG TIN NGƯỜI DÙNG -->
+    <div class="pt-5 border-t border-slate-800 flex items-center justify-between">
       <div class="flex items-center gap-3 overflow-hidden">
         <div class="w-9 h-9 rounded-full bg-slate-700 flex-shrink-0 flex items-center justify-center font-bold text-cyan-400" id="userAvatar">U</div>
         <div class="truncate">
           <p class="font-semibold text-sm text-slate-200 truncate" id="userName">Username</p>
-          <p class="text-xs text-slate-400 truncate" id="userEmail">email@gmail.com</p>
+          <p class="text-xs text-slate-400 truncate" id="userEmail">user@gmail.com</p>
         </div>
       </div>
       <button onclick="logout()" class="text-slate-400 hover:text-rose-400 transition ml-2 flex-shrink-0" title="Đăng xuất">
@@ -153,14 +127,18 @@
   </main>
 
   <script>
-    // LẤY DỮ LIỆU ĐĂNG NHẬP CHÍNH XÁC
-    const username = localStorage.getItem('username') || 'Explorer';
-    const email = localStorage.getItem('userEmail') || 'user@gmail.com';
+    // Kiểm tra đăng nhập
+    const username = localStorage.getItem('username');
+    const email = localStorage.getItem('userEmail');
 
-    document.getElementById('userName').innerText = username;
-    document.getElementById('dashWelcomeUser').innerText = username;
-    document.getElementById('userEmail').innerText = email;
-    document.getElementById('userAvatar').innerText = username.charAt(0).toUpperCase();
+    if (!username) {
+      window.location.href = 'index.html';
+    } else {
+      document.getElementById('userName').innerText = username;
+      document.getElementById('dashWelcomeUser').innerText = username;
+      document.getElementById('userEmail').innerText = email || 'Chưa cập nhật email';
+      document.getElementById('userAvatar').innerText = username.charAt(0).toUpperCase();
+    }
 
     window.addEventListener('load', () => {
       const loader = document.getElementById('loader');
@@ -169,18 +147,12 @@
           loader.style.opacity = '0';
           loader.style.visibility = 'hidden';
         }
-      }, 400);
+      }, 300);
     });
 
-    function switchTab(tabName) {
-      const allTabs = document.querySelectorAll('.tab-content');
-      allTabs.forEach(el => el.classList.add('hidden'));
-      const selectedTab = document.getElementById(`tab-${tabName}`);
-      if (selectedTab) selectedTab.classList.remove('hidden');
-    }
-
     function logout() {
-      localStorage.clear();
+      localStorage.removeItem('username');
+      localStorage.removeItem('userEmail');
       alert('Đã đăng xuất!');
       window.location.href = 'index.html';
     }

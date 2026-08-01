@@ -3,250 +3,217 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TaskNova - Đăng Nhập / Đăng Ký</title>
+  <title>TaskNova - Portal Đăng Nhập</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
   <style>
     body {
       background-color: #050614;
       color: #e2e8f0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
     }
-
-    /* MÀN HÌNH CHỜ LOADER */
-    #loader {
-      position: fixed;
-      inset: 0;
-      background-color: #050614;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.6s ease, visibility 0.6s ease;
-    }
-
-    .loader-spinner {
-      width: 50px;
-      height: 50px;
-      border: 4px solid rgba(56, 189, 248, 0.1);
-      border-left-color: #38bdf8;
-      border-top-color: #818cf8;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* BACKGROUND YOUTUBE NỀN TRÀN */
-    .youtube-bg-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: -10;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    .youtube-bg-container iframe {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 100vw;
-      height: 56.25vw;
-      min-height: 100vh;
-      min-width: 177.77vh;
-      transform: translate(-50%, -50%) scale(1.4);
-      filter: brightness(45%) blur(2px);
-    }
-
-    /* GALAXY CARD */
     .galaxy-card {
-      background: rgba(15, 23, 42, 0.82);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(56, 189, 248, 0.2);
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
     }
-
-    .neon-text {
-      text-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
-    }
-
     .neon-btn {
       background: linear-gradient(135deg, #0284c7, #6366f1);
       box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
     }
     .neon-btn:hover {
       box-shadow: 0 0 25px rgba(56, 189, 248, 0.8);
-      transform: translateY(-2px);
     }
   </style>
 </head>
-<body class="flex items-center justify-center p-4 relative min-h-screen">
+<body class="min-h-screen flex items-center justify-center p-4">
 
-  <!-- LOADER CHE NÚT PAUSE/PLAY -->
-  <div id="loader">
-    <div class="loader-spinner mb-4"></div>
-    <div class="flex items-center gap-2">
-      <span class="text-2xl">🚀</span>
-      <h2 class="text-xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">
-        TASKNOVA
-      </h2>
-    </div>
-    <p class="text-xs text-slate-400 mt-2 tracking-wider">Đang khởi tạo cổng không gian...</p>
-  </div>
-
-  <!-- YOUTUBE BACKGROUND -->
-  <div class="youtube-bg-container">
-    <iframe 
-      src="https://www.youtube-nocookie.com/embed/sJoKwg0xLX4?autoplay=1&mute=1&controls=0&loop=1&playlist=sJoKwg0xLX4&playsinline=1&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&enablejsapi=1" 
-      title="Galaxy Background" 
-      frameborder="0" 
-      allow="autoplay; encrypted-media; picture-in-picture"
-      style="pointer-events: none;">
-    </iframe>
-  </div>
-
-  <!-- MAIN AUTH CONTAINER -->
-  <div class="w-full max-w-md galaxy-card p-8 rounded-3xl space-y-6 relative z-10">
-    
-    <!-- HEADER BRANDING -->
+  <div class="w-full max-w-md galaxy-card p-8 rounded-2xl space-y-6">
     <div class="text-center space-y-2">
-      <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-cyan-500 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-lg shadow-cyan-500/40">
+      <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-cyan-500 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-lg shadow-cyan-500/30">
         🚀
       </div>
-      <h1 class="text-3xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 neon-text">
+      <h1 class="text-3xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">
         TASKNOVA
       </h1>
-      <p class="text-xs text-slate-400" id="formSubtitle">Đăng nhập để tiếp tục hành trình kiếm CRD</p>
+      <p class="text-xs text-slate-400">Cổng kết nối dải ngân hà nhiệm vụ</p>
     </div>
 
-    <!-- TAB SWITCHER (ĐĂNG NHẬP / ĐĂNG KÝ) -->
+    <!-- TAB SWITCHER -->
     <div class="flex bg-slate-900/80 p-1 rounded-xl border border-slate-800">
-      <button id="tabLoginBtn" onclick="toggleAuthMode('login')" class="flex-1 py-2 rounded-lg font-semibold text-sm transition bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+      <button id="btnTabLogin" type="button" onclick="toggleAuthTab('login')" class="w-1/2 py-2 rounded-lg text-sm font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 transition">
         Đăng Nhập
       </button>
-      <button id="tabRegisterBtn" onclick="toggleAuthMode('register')" class="flex-1 py-2 rounded-lg font-semibold text-sm transition text-slate-400 hover:text-slate-200">
+      <button id="btnTabRegister" type="button" onclick="toggleAuthTab('register')" class="w-1/2 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-slate-200 transition">
         Đăng Ký
       </button>
     </div>
 
-    <!-- FORM ĐĂNG NHẬP & ĐĂNG KÝ -->
-    <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
-      
-      <!-- USERNAME INPUT -->
+    <!-- FORM ĐĂNG NHẬP -->
+    <form id="formLogin" onsubmit="handleLogin(event)" class="space-y-4">
       <div>
-        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Tên Đăng Nhập</label>
-        <div class="relative">
-          <i class="fa-solid fa-user absolute left-4 top-3.5 text-slate-500 text-sm"></i>
-          <input type="text" id="usernameInput" required placeholder="Nhập username..." class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-cyan-400">
-        </div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Tên Đăng Nhập / Email</label>
+        <input type="text" id="loginUser" required placeholder="Nhập username hoặc email..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
       </div>
-
-      <!-- EMAIL INPUT (ẨN TRONG MỐI ĐĂNG NHẬP) -->
-      <div id="emailField" class="hidden">
-        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Địa Chỉ Email</label>
-        <div class="relative">
-          <i class="fa-solid fa-envelope absolute left-4 top-3.5 text-slate-500 text-sm"></i>
-          <input type="email" id="emailInput" placeholder="Nhập email xác thực..." class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-cyan-400">
-        </div>
-      </div>
-
-      <!-- PASSWORD INPUT -->
       <div>
-        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Mật Khẩu</label>
-        <div class="relative">
-          <i class="fa-solid fa-lock absolute left-4 top-3.5 text-slate-500 text-sm"></i>
-          <input type="password" id="passwordInput" required placeholder="••••••••" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-cyan-400">
+        <div class="flex justify-between items-center mb-1">
+          <label class="text-xs font-semibold text-slate-300">Mật Khẩu</label>
+          <a href="forgot-password.html" class="text-xs text-cyan-400 hover:underline">Quên mật khẩu?</a>
         </div>
+        <input type="password" id="loginPass" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
       </div>
-
-      <!-- OTP FIELD (HIỆN KHI CẦN XÁC THỰC OTP) -->
-      <div id="otpField" class="hidden">
-        <label class="block text-xs font-semibold text-cyan-400 mb-1.5">Mã OTP (Xác thực Email)</label>
-        <div class="relative">
-          <i class="fa-solid fa-key absolute left-4 top-3.5 text-slate-500 text-sm"></i>
-          <input type="text" id="otpInput" placeholder="Nhập mã 6 chữ số..." class="w-full bg-slate-900/90 border border-cyan-500/50 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-cyan-400">
-        </div>
-      </div>
-
-      <button type="submit" id="submitBtn" class="w-full py-3 rounded-xl font-bold text-white neon-btn transition mt-2 flex justify-center items-center gap-2">
-        <span>Đăng Nhập</span>
-        <i class="fa-solid fa-arrow-right"></i>
+      <button type="submit" class="w-full py-3 rounded-xl font-bold text-white neon-btn transition">
+        Vào Portal TaskNova
       </button>
     </form>
 
-    <div class="text-center pt-2">
-      <p class="text-xs text-slate-500">Bằng việc tiếp tục, bạn đồng ý với Điều khoản dịch vụ TaskNova</p>
-    </div>
+    <!-- FORM ĐĂNG KÝ -->
+    <form id="formRegister" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Tên Tài Khoản (Username)</label>
+        <input type="text" id="regUser" required placeholder="Ví dụ: BLACK" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Email</label>
+        <div class="flex gap-2">
+          <input type="email" id="regEmail" required placeholder="nhan@gmail.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
+          <button type="button" onclick="sendRegisterOTP()" class="px-3 py-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 rounded-xl text-xs font-semibold whitespace-nowrap transition">
+            Gửi OTP
+          </button>
+        </div>
+      </div>
+      
+      <!-- KHU VỰC NHẬP OTP -->
+      <div id="regOtpGroup" class="hidden space-y-1">
+        <label class="block text-xs font-semibold text-slate-300">Nhập Mã OTP (6 Số)</label>
+        <input type="text" id="regOtpInput" placeholder="Nhập mã OTP tại đây..." maxlength="6" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 text-center font-bold tracking-widest">
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Mật Khẩu</label>
+        <input type="password" id="regPass" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
+      </div>
+      
+      <button type="submit" id="btnRegisterSubmit" class="w-full py-3 rounded-xl font-bold text-white neon-btn transition">
+        Tạo Tài Khoản
+      </button>
+    </form>
   </div>
 
   <script>
-    let isLoginMode = true;
+    let currentRegOTP = null;
 
-    // TẮT LOADER SAU 2.5s
-    window.addEventListener('load', () => {
-      const loader = document.getElementById('loader');
-      setTimeout(() => {
-        if (loader) {
-          loader.style.opacity = '0';
-          loader.style.visibility = 'hidden';
-        }
-      }, 2500);
-    });
+    function toggleAuthTab(tab) {
+      const fLogin = document.getElementById('formLogin');
+      const fReg = document.getElementById('formRegister');
+      const bLogin = document.getElementById('btnTabLogin');
+      const bReg = document.getElementById('btnTabRegister');
 
-    // CHUYỂN ĐỔI GIAO DIỆN ĐĂNG NHẬP <-> ĐĂNG KÝ
-    function toggleAuthMode(mode) {
-      isLoginMode = mode === 'login';
-      const emailField = document.getElementById('emailField');
-      const formSubtitle = document.getElementById('formSubtitle');
-      const submitBtn = document.getElementById('submitBtn');
-      const tabLoginBtn = document.getElementById('tabLoginBtn');
-      const tabRegisterBtn = document.getElementById('tabRegisterBtn');
-
-      if (isLoginMode) {
-        emailField.classList.add('hidden');
-        document.getElementById('emailInput').removeAttribute('required');
-        formSubtitle.innerText = 'Đăng nhập để tiếp tục hành trình kiếm CRD';
-        submitBtn.querySelector('span').innerText = 'Đăng Nhập';
-        
-        tabLoginBtn.className = "flex-1 py-2 rounded-lg font-semibold text-sm transition bg-cyan-500/20 text-cyan-400 border border-cyan-500/30";
-        tabRegisterBtn.className = "flex-1 py-2 rounded-lg font-semibold text-sm transition text-slate-400 hover:text-slate-200";
+      if (tab === 'login') {
+        fLogin.classList.remove('hidden');
+        fReg.classList.add('hidden');
+        bLogin.className = "w-1/2 py-2 rounded-lg text-sm font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 transition";
+        bReg.className = "w-1/2 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-slate-200 transition";
       } else {
-        emailField.classList.remove('hidden');
-        document.getElementById('emailInput').setAttribute('required', 'true');
-        formSubtitle.innerText = 'Tạo tài khoản mới để nhận 1,000 CRD thưởng';
-        submitBtn.querySelector('span').innerText = 'Tạo Tài Khoản';
-
-        tabRegisterBtn.className = "flex-1 py-2 rounded-lg font-semibold text-sm transition bg-cyan-500/20 text-cyan-400 border border-cyan-500/30";
-        tabLoginBtn.className = "flex-1 py-2 rounded-lg font-semibold text-sm transition text-slate-400 hover:text-slate-200";
+        fReg.classList.remove('hidden');
+        fLogin.classList.add('hidden');
+        bReg.className = "w-1/2 py-2 rounded-lg text-sm font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 transition";
+        bLogin.className = "w-1/2 py-2 rounded-lg text-sm font-bold text-slate-400 hover:text-slate-200 transition";
       }
     }
 
-    // XỬ LÝ SUBMIT ĐĂNG NHẬP / ĐĂNG KÝ
-    function handleAuthSubmit(event) {
-      event.preventDefault();
-      const username = document.getElementById('usernameInput').value;
-
-      // Lưu Token giả lập vào localStorage
-      localStorage.setItem('token', 'tasknova_user_token_' + Date.now());
-      localStorage.setItem('username', username);
-
-      if (isLoginMode) {
-        alert('Đăng nhập thành công! Đang chuyển hướng đến Dashboard...');
-      } else {
-        alert('Đăng ký tài khoản thành công! Đang chuyển hướng...');
+    // GỬI OTP DÙNG ĐĂNG KÝ
+    function sendRegisterOTP() {
+      const email = document.getElementById('regEmail').value.trim().toLowerCase();
+      if (!email || !email.includes('@')) {
+        alert('⚠️ Vui lòng nhập địa chỉ Email hợp lệ!');
+        return;
       }
 
-      // CHUYỂN HƯỚNG NGAY TỚI TRANG DASHBOARD.HTML
+      const users = JSON.parse(localStorage.getItem('tasknova_users') || '[]');
+      
+      // KIỂM TRA TRÙNG GMAIL
+      if (users.some(u => u.email.toLowerCase() === email)) {
+        alert('❌ Gmail này đã được đăng ký trong hệ thống! Vui lòng dùng Gmail khác hoặc Đăng Nhập.');
+        return;
+      }
+
+      currentRegOTP = Math.floor(100000 + Math.random() * 900000).toString();
+      document.getElementById('regOtpGroup').classList.remove('hidden');
+
+      alert(`📩 Mã OTP Đăng ký của bạn là: ${currentRegOTP}`);
+    }
+
+    // XỬ LÝ ĐĂNG KÝ
+    function handleRegister(e) {
+      e.preventDefault();
+      
+      const rawUser = document.getElementById('regUser').value.trim();
+      const email = document.getElementById('regEmail').value.trim().toLowerCase();
+      const inputOTP = document.getElementById('regOtpInput').value.trim();
+      const password = document.getElementById('regPass').value;
+
+      // 1. Kiểm tra OTP
+      if (!currentRegOTP) {
+        alert('⚠️ Vui lòng bấm "Gửi OTP" để lấy mã xác nhận trước!');
+        return;
+      }
+      if (inputOTP !== currentRegOTP) {
+        alert('❌ Mã OTP không chính xác! Vui lòng kiểm tra lại.');
+        return;
+      }
+
+      let users = JSON.parse(localStorage.getItem('tasknova_users') || '[]');
+
+      // 2. Kiểm tra trùng Username KHÔNG phân biệt hoa/thường
+      const isUserExist = users.some(u => u.username.toLowerCase() === rawUser.toLowerCase());
+      if (isUserExist) {
+        alert(`❌ Tên tài khoản "${rawUser}" đã tồn tại (không phân biệt hoa/thường)! Vui lòng chọn tên khác.`);
+        return;
+      }
+
+      // 3. Kiểm tra lại trùng Gmail lần cuối
+      if (users.some(u => u.email.toLowerCase() === email)) {
+        alert('❌ Gmail này đã được đăng ký!');
+        return;
+      }
+
+      // Lưu tài khoản mới
+      users.push({ username: rawUser, email: email, password: password });
+      localStorage.setItem('tasknova_users', JSON.stringify(users));
+
+      // Đăng nhập tự động
+      localStorage.setItem('username', rawUser);
+      localStorage.setItem('userEmail', email);
+
+      alert('🎉 Đăng ký thành công!');
+      window.location.href = 'dashboard.html';
+    }
+
+    // XỬ LÝ ĐĂNG NHẬP
+    function handleLogin(e) {
+      e.preventDefault();
+      const userOrEmail = document.getElementById('loginUser').value.trim().toLowerCase();
+      const pass = document.getElementById('loginPass').value;
+
+      let users = JSON.parse(localStorage.getItem('tasknova_users') || '[]');
+
+      // Tìm tài khoản theo username hoặc email (không phân biệt hoa/thường)
+      const account = users.find(u => u.username.toLowerCase() === userOrEmail || u.email.toLowerCase() === userOrEmail);
+
+      if (!account) {
+        alert('❌ Tài khoản hoặc Gmail chưa tồn tại! Vui lòng đăng ký tài khoản mới.');
+        return;
+      }
+
+      if (account.password !== pass) {
+        alert('❌ Mật khẩu không chính xác!');
+        return;
+      }
+
+      // Đăng nhập thành công
+      localStorage.setItem('username', account.username);
+      localStorage.setItem('userEmail', account.email);
       window.location.href = 'dashboard.html';
     }
   </script>
