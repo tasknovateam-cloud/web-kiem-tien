@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const path = require('path');
-const fetch = require('node-fetch');
 
 const app = express();
 app.use(express.json());
@@ -26,7 +25,7 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 const otpStore = new Map();
 
-// Hàm gửi Email qua Brevo REST API (Chạy qua HTTPS, KHÔNG lo bị chặn port)
+// Hàm gửi Email qua Brevo REST API (Dùng fetch native của Node.js)
 async function sendBrevoEmail(toEmail, otp) {
   const apiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.EMAIL_USER || 'tasknova.team@gmail.com';
@@ -95,7 +94,6 @@ app.post('/api/send-otp', async (req, res) => {
       expires: Date.now() + 5 * 60 * 1000
     });
 
-    // Gọi Brevo API gửi mail
     await sendBrevoEmail(email, otp);
 
     res.json({ message: 'Mã OTP đã được gửi về Gmail của bạn!' });
