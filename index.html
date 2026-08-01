@@ -16,6 +16,34 @@
       overflow-x: hidden;
     }
 
+    /* MÀN HÌNH CHỜ (LOADING SCREEN) VŨ TRỤ */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background-color: #050614;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    .loader-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(56, 189, 248, 0.1);
+      border-left-color: #38bdf8;
+      border-top-color: #818cf8;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     /* KHUNG CHỨA VIDEO YOUTUBE NỀN TRÀN MÀN HÌNH */
     .youtube-bg-container {
       position: fixed;
@@ -25,7 +53,7 @@
       height: 100vh;
       z-index: -10;
       overflow: hidden;
-      pointer-events: none; /* Tránh click nhầm vào video */
+      pointer-events: none;
     }
 
     .youtube-bg-container iframe {
@@ -33,16 +61,13 @@
       top: 50%;
       left: 50%;
       width: 100vw;
-      height: 56.25vw; /* Tỷ lệ 16:9 chuẩn */
+      height: 56.25vw;
       min-height: 100vh;
-      min-width: 177.77vh; /* Tỷ lệ 16:9 chuẩn */
-      transform: translate(-50%, -50%) scale(1.35); /* Phóng to 1.35x để giấu viền/logo YouTube */
+      min-width: 177.77vh;
+      transform: translate(-50%, -50%) scale(1.4); /* Phóng to 1.4x để giấu nút pause/play ẩn bên dưới */
       
-      /* ================================================================= */
-      /* 👇 ĐÂY CÍNH LÀ DÒNG CHỈNH ĐỘ MỜ VÀ ĐỘ SÁNG BẠN CẦN TIM 👇 */
-      /* brightness(50%): Tối 50% | blur(1.5px): Mờ nhẹ 1.5 pixel */
+      /* --- VỊ TRÍ CHỈNH ĐỘ MỜ VÀ ĐỘ SÁNG BÊN DƯỚI --- */
       filter: brightness(50%) blur(1.5px);
-      /* ================================================================= */
     }
 
     /* Phong cách Card Galaxy */
@@ -67,11 +92,39 @@
       box-shadow: 0 0 25px rgba(56, 189, 248, 0.8);
       transform: translateY(-2px);
     }
+
+    /* HIỆU ỨNG ANIMATION MƯỢT MÀ KHI CHUYỂN TAB */
+    .tab-content {
+      animation: fadeInSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeInSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
 <body class="flex flex-col md:flex-row relative">
 
-  <!-- FRAME VIDEO YOUTUBE NỀN ĐỘNG SẠCH (ẨN HOÀN TOÀN HÌNH ẢNH NÚT BẤM DỪNG/CHUYỂN) -->
+  <!-- 1. MÀN HÌNH CHỜ (LOADER) CHE MÀN HÌNH LÚC VIDEO DỰNG SẴN -->
+  <div id="loader">
+    <div class="loader-spinner mb-4"></div>
+    <div class="flex items-center gap-2">
+      <span class="text-2xl">🚀</span>
+      <h2 class="text-xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">
+        TASKNOVA
+      </h2>
+    </div>
+    <p class="text-xs text-slate-400 mt-2 tracking-wider">Đang kết nối cổng không gian...</p>
+  </div>
+
+  <!-- 2. FRAME VIDEO YOUTUBE NỀN ĐỘNG SẠCH -->
   <div class="youtube-bg-container">
     <iframe 
       src="https://www.youtube-nocookie.com/embed/sJoKwg0xLX4?autoplay=1&mute=1&controls=0&loop=1&playlist=sJoKwg0xLX4&playsinline=1&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&enablejsapi=1" 
@@ -330,12 +383,32 @@
   </main>
 
   <script>
-    // Tab Switching Logic
+    // 1. TỰ ĐỘNG TẮT MÀN HÌNH CHỜ SAU 2.5 GIÂY LÚC VIDEO NỀN ĐÃ BUFF BẮT ĐẦU CHẠY
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const loader = document.getElementById('loader');
+        if (loader) {
+          loader.style.opacity = '0';
+          loader.style.visibility = 'hidden';
+        }
+      }, 2500); // 2.5 giây đủ cho Youtube load video ngầm
+    });
+
+    // 2. CHUYỂN TAB CÓ ANIMATION TỰ NHIÊN MƯỢT MÀ
     function switchTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('text-cyan-400', 'bg-slate-800/80'));
-      
-      document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+      const allTabs = document.querySelectorAll('.tab-content');
+      allTabs.forEach(el => {
+        el.classList.add('hidden');
+      });
+
+      const selectedTab = document.getElementById(`tab-${tabName}`);
+      if (selectedTab) {
+        selectedTab.classList.remove('hidden');
+        // Trigger lại animation trượt nhẹ lên
+        selectedTab.style.animation = 'none';
+        selectedTab.offsetHeight; /* trigger reflow */
+        selectedTab.style.animation = 'fadeInSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+      }
     }
 
     function logout() {
