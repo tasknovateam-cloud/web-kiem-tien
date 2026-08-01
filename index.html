@@ -26,7 +26,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      transition: opacity 0.8s ease, visibility 0.8s ease;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
     }
 
     .loader-spinner {
@@ -64,9 +64,7 @@
       height: 56.25vw;
       min-height: 100vh;
       min-width: 177.77vh;
-      transform: translate(-50%, -50%) scale(1.4); /* Phóng to để giấu nút pause/play ẩn bên dưới */
-      
-      /* CHỈNH ĐỘ MỜ VÀ ĐỘ SÁNG BÊN DƯỚI */
+      transform: translate(-50%, -50%) scale(1.4);
       filter: brightness(50%) blur(1.5px);
     }
 
@@ -93,7 +91,7 @@
       transform: translateY(-2px);
     }
 
-    /* HIỆU ỨNG ANIMATION MƯỢT MÀ KHI CHUYỂN TAB */
+    /* ANIMATION CHUYỂN TAB */
     .tab-content {
       animation: fadeInSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
@@ -112,7 +110,7 @@
 </head>
 <body class="flex flex-col md:flex-row relative">
 
-  <!-- 1. MÀN HÌNH CHỜ (LOADER 4 GIÂY) CHE MÀN HÌNH LÚC VIDEO DỰNG SẴN -->
+  <!-- MÀN HÌNH CHỜ (LOADER) -->
   <div id="loader">
     <div class="loader-spinner mb-4"></div>
     <div class="flex items-center gap-2">
@@ -121,12 +119,13 @@
         TASKNOVA
       </h2>
     </div>
-    <p class="text-xs text-slate-400 mt-2 tracking-wider">Đang kết nối cổng không gian...</p>
+    <p class="text-xs text-slate-400 mt-2 tracking-wider" id="loaderText">Đang kết nối cổng không gian...</p>
   </div>
 
-  <!-- 2. FRAME VIDEO YOUTUBE NỀN ĐỘNG SẠCH -->
+  <!-- FRAME VIDEO YOUTUBE NỀN -->
   <div class="youtube-bg-container">
     <iframe 
+      id="bgVideo"
       src="https://www.youtube-nocookie.com/embed/sJoKwg0xLX4?autoplay=1&mute=1&controls=0&loop=1&playlist=sJoKwg0xLX4&playsinline=1&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&enablejsapi=1" 
       title="Galaxy Background" 
       frameborder="0" 
@@ -138,7 +137,6 @@
   <!-- Sidebar Menu -->
   <aside class="w-full md:w-64 galaxy-card p-5 flex flex-col justify-between border-r border-slate-800 md:min-h-screen">
     <div>
-      <!-- Logo -->
       <div class="flex items-center gap-3 mb-8">
         <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-500 to-indigo-500 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-cyan-500/30">
           🚀
@@ -148,7 +146,6 @@
         </h1>
       </div>
 
-      <!-- Navigation Links -->
       <nav class="space-y-2">
         <button onclick="switchTab('dashboard')" class="nav-btn active w-full flex items-center gap-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-slate-800/60 hover:text-cyan-400">
           <i class="fa-solid fa-chart-pie w-5"></i> Tổng quan
@@ -168,7 +165,6 @@
       </nav>
     </div>
 
-    <!-- User Profile Footer Sidebar -->
     <div class="pt-5 border-t border-slate-800/80 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center font-bold text-cyan-400" id="userAvatar">U</div>
@@ -186,7 +182,7 @@
   <!-- Main Content Area -->
   <main class="flex-1 p-6 md:p-10 space-y-8 max-w-7xl">
 
-    <!-- 1. TAB TỔNG QUAN (DASHBOARD) -->
+    <!-- 1. TAB TỔNG QUAN -->
     <section id="tab-dashboard" class="tab-content space-y-6">
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
@@ -195,9 +191,7 @@
         </div>
       </div>
 
-      <!-- Stats Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Balance Card -->
         <div class="galaxy-card p-6 rounded-2xl relative overflow-hidden">
           <div class="absolute -right-4 -bottom-4 text-cyan-500/10 text-8xl"><i class="fa-solid fa-coins"></i></div>
           <p class="text-slate-400 text-sm">Số dư Ví</p>
@@ -205,7 +199,6 @@
           <p class="text-xs text-slate-500 mt-2">Tương đương ~<span id="crdToVnd">0</span> VNĐ</p>
         </div>
 
-        <!-- Streak Card (Chuỗi ngày) -->
         <div class="galaxy-card p-6 rounded-2xl relative overflow-hidden">
           <div class="absolute -right-4 -bottom-4 text-orange-500/10 text-8xl"><i class="fa-solid fa-fire"></i></div>
           <p class="text-slate-400 text-sm">Chuỗi Hoạt Động</p>
@@ -213,7 +206,6 @@
           <p class="text-xs text-orange-300/70 mt-2">Đạt 10 ngày để nhận thưởng 5,000 CRD!</p>
         </div>
 
-        <!-- Tasks Completed Card -->
         <div class="galaxy-card p-6 rounded-2xl relative overflow-hidden">
           <div class="absolute -right-4 -bottom-4 text-indigo-500/10 text-8xl"><i class="fa-solid fa-circle-check"></i></div>
           <p class="text-slate-400 text-sm">Nhiệm Vụ Đã Làm</p>
@@ -223,12 +215,10 @@
       </div>
     </section>
 
-    <!-- 2. TAB NHIỆM VỤ (TASKS) -->
+    <!-- 2. TAB NHIỆM VỤ -->
     <section id="tab-tasks" class="tab-content hidden space-y-6">
       <h2 class="text-2xl font-bold text-slate-100"><i class="fa-solid fa-rocket text-cyan-400 mr-2"></i> Nhiệm Vụ Kiếm CRD</h2>
-      
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Task Item 1 -->
         <div class="galaxy-card p-6 rounded-2xl flex flex-col justify-between space-y-4">
           <div>
             <div class="flex justify-between items-start mb-2">
@@ -240,8 +230,6 @@
           </div>
           <button onclick="startTask('Traffic Google', 1000)" class="w-full py-2.5 rounded-xl font-semibold text-white neon-btn transition">Thực hiện ngay</button>
         </div>
-
-        <!-- Task Item 2 -->
         <div class="galaxy-card p-6 rounded-2xl flex flex-col justify-between space-y-4">
           <div>
             <div class="flex justify-between items-start mb-2">
@@ -256,10 +244,9 @@
       </div>
     </section>
 
-    <!-- 3. TAB RÚT TIỀN (WITHDRAW) -->
+    <!-- 3. TAB RÚT TIỀN -->
     <section id="tab-withdraw" class="tab-content hidden space-y-6">
       <h2 class="text-2xl font-bold text-slate-100"><i class="fa-solid fa-credit-card text-indigo-400 mr-2"></i> Đổi Thưởng / Rút Tiền</h2>
-      
       <div class="galaxy-card p-6 md:p-8 rounded-2xl max-w-2xl space-y-5">
         <div>
           <label class="block text-sm font-medium text-slate-300 mb-2">Chọn phương thức nhận tiền</label>
@@ -269,30 +256,24 @@
             <option value="CARD">Thẻ cào Điện thoại</option>
           </select>
         </div>
-
         <div>
           <label class="block text-sm font-medium text-slate-300 mb-2">Số tài khoản / Số điện thoại nhận</label>
           <input type="text" placeholder="Nhập STK hoặc SĐT MoMo..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-cyan-500">
         </div>
-
         <div>
           <label class="block text-sm font-medium text-slate-300 mb-2">Số điểm CRD muốn rút (Tối thiểu 10,000 CRD)</label>
           <input type="number" placeholder="Ví dụ: 10000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-cyan-500">
         </div>
-
         <button class="w-full py-3 rounded-xl font-bold text-white neon-btn transition mt-4">Gửi Yêu Cầu Rút Tiền</button>
       </div>
     </section>
 
-    <!-- 4. TAB LỊCH SỬ & CHUỖI (HISTORY & STREAK) -->
+    <!-- 4. TAB LỊCH SỬ & CHUỖI -->
     <section id="tab-history" class="tab-content hidden space-y-6">
       <h2 class="text-2xl font-bold text-slate-100"><i class="fa-solid fa-clock-rotate-left text-orange-400 mr-2"></i> Lịch Sử & Tiến Trình Chuỗi</h2>
-
-      <!-- Progress Streak Box -->
       <div class="galaxy-card p-6 rounded-2xl space-y-4">
         <h3 class="font-bold text-slate-200 text-lg">🔥 Chuỗi Ngày Hoạt Động Liên Tiếp</h3>
         <p class="text-sm text-slate-400">Làm ít nhất 1 nhiệm vụ mỗi ngày để duy trì chuỗi và nhận phần thưởng cực lớn.</p>
-
         <div class="grid grid-cols-5 md:grid-cols-10 gap-3 text-center pt-2">
           <div class="p-3 bg-cyan-500/20 border border-cyan-500/50 rounded-xl text-xs font-bold text-cyan-300">N1 ✔️</div>
           <div class="p-3 bg-cyan-500/20 border border-cyan-500/50 rounded-xl text-xs font-bold text-cyan-300">N2 ✔️</div>
@@ -306,61 +287,11 @@
           <div class="p-3 bg-indigo-500/20 border border-indigo-500/50 rounded-xl text-xs font-bold text-indigo-300">N10 🎁</div>
         </div>
       </div>
-
-      <!-- History Tables -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Earning History -->
-        <div class="galaxy-card p-6 rounded-2xl space-y-4">
-          <h3 class="font-bold text-slate-200"><i class="fa-solid fa-arrow-down-left text-emerald-400 mr-2"></i> Lịch Sử Kiếm Tiền</h3>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm text-slate-300">
-              <thead class="text-xs text-slate-400 border-b border-slate-800">
-                <tr>
-                  <th class="pb-3">Nhiệm vụ</th>
-                  <th class="pb-3">CRD</th>
-                  <th class="pb-3">Thời gian</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-800/50">
-                <tr>
-                  <td class="py-3 font-medium">Traffic Google</td>
-                  <td class="text-emerald-400 font-bold">+1,000</td>
-                  <td class="text-xs text-slate-500">Vừa xong</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Withdraw History -->
-        <div class="galaxy-card p-6 rounded-2xl space-y-4">
-          <h3 class="font-bold text-slate-200"><i class="fa-solid fa-arrow-up-right-from-square text-rose-400 mr-2"></i> Lịch Sử Rút Tiền</h3>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm text-slate-300">
-              <thead class="text-xs text-slate-400 border-b border-slate-800">
-                <tr>
-                  <th class="pb-3">Hình thức</th>
-                  <th class="pb-3">Số tiền</th>
-                  <th class="pb-3">Trạng thái</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-800/50">
-                <tr>
-                  <td class="py-3">Ví MoMo</td>
-                  <td class="font-bold">10,000đ</td>
-                  <td><span class="px-2 py-1 bg-emerald-500/10 text-emerald-400 text-xs rounded-full border border-emerald-500/20">Thành công</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
     </section>
 
-    <!-- 5. TAB BẢNG XẾP HẠNG (LEADERBOARD) -->
+    <!-- 5. TAB BẢNG XẾP HẠNG -->
     <section id="tab-leaderboard" class="tab-content hidden space-y-6">
       <h2 class="text-2xl font-bold text-slate-100"><i class="fa-solid fa-trophy text-yellow-400 mr-2"></i> Bảng Xếp Hạng Top Đỉnh Cao</h2>
-      
       <div class="galaxy-card p-6 rounded-2xl">
         <p class="text-slate-400 text-sm mb-4">Top 3 thành viên chăm chỉ nhất tuần này sẽ nhận quà bonus đặc biệt!</p>
         <div class="space-y-3">
@@ -383,23 +314,36 @@
   </main>
 
   <script>
-    // TỰ ĐỘNG TẮT MÀN HÌNH CHỜ ĐÚNG 4 GIÂY (4000ms)
-    window.addEventListener('load', () => {
-      const loader = document.getElementById('loader');
-      setTimeout(() => {
-        if (loader) {
-          loader.style.opacity = '0';
-          loader.style.visibility = 'hidden';
-        }
-      }, 5000); // 4000ms = 4 giây
+    const loader = document.getElementById('loader');
+
+    // 1. TỰ ĐỘNG BẬT CHE MÀN HÌNH MỖI KHU QUAY LẠI TAB TRÌNH DUYỆT (ĐỂ CHE PLAY/PAUSE)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        // Khi người dùng bấm quay lại Tab này
+        showLoaderTemporarily(1800); // Che 1.8 giây cho Youtube load xong
+      }
     });
 
-    // CHUYỂN TAB CÓ ANIMATION
+    function showLoaderTemporarily(ms) {
+      if (loader) {
+        loader.style.opacity = '1';
+        loader.style.visibility = 'visible';
+        setTimeout(() => {
+          loader.style.opacity = '0';
+          loader.style.visibility = 'hidden';
+        }, ms);
+      }
+    }
+
+    // Tắt Loader lần đầu mở trang sau 4s
+    window.addEventListener('load', () => {
+      showLoaderTemporarily(4000);
+    });
+
+    // 2. CHUYỂN TAB CÓ ANIMATION
     function switchTab(tabName) {
       const allTabs = document.querySelectorAll('.tab-content');
-      allTabs.forEach(el => {
-        el.classList.add('hidden');
-      });
+      allTabs.forEach(el => el.classList.add('hidden'));
 
       const selectedTab = document.getElementById(`tab-${tabName}`);
       if (selectedTab) {
@@ -410,11 +354,17 @@
       }
     }
 
-    // XỬ LÝ ĐĂNG XUẤT CHUẨN ĐƯA VỀ TRANG ĐĂNG NHẬP
+    // 3. XỬ LÝ ĐĂNG XUẤT TRIỆT ĐỂ
     function logout() {
-      localStorage.removeItem('token');
-      alert('Đã đăng xuất tài khoản!');
-      window.location.href = 'login.html'; // Chuyển về trang login
+      // Xóa hết thông tin tài khoản đang lưu
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      alert('Đã đăng xuất thành công!');
+
+      // Thử chuyển hướng sang trang đăng nhập (kiểm tra các file phổ biến)
+      // Nếu dự án của bạn chưa có login.html, nó sẽ tự động tải lại trang chủ sạch
+      window.location.href = 'login.html';
     }
   </script>
 </body>
