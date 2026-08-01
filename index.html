@@ -6,13 +6,43 @@
   <title>TaskNova - Galaxy Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
   <style>
     body {
-      background: radial-gradient(circle at top left, #0d0f2a, #050614, #020208);
+      background-color: #050614;
       color: #e2e8f0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       min-height: 100vh;
+      overflow-x: hidden;
     }
+
+    /* CSS ĐỘC QUYỀN BIẾN YOUTUBE THÀNH NỀN ĐỘNG MỜ TRÀN MÀN HÌNH */
+    .youtube-bg-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -10;
+      overflow: hidden;
+      pointer-events: none; /* Không cho click dính vào video */
+    }
+
+    .youtube-bg-container iframe {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100vw;
+      height: 56.25vw; /* Tỷ lệ 16:9 chuẩn */
+      min-height: 100vh;
+      min-width: 177.77vh; /* Tỷ lệ 16:9 chuẩn */
+      transform: translate(-50%, -50%) scale(1.2); /* Phóng to nhẹ để che viền đen */
+      
+      /* CÀI ĐẶT ĐỘ MỜ VÀ ĐỘ TỐI BÊN DƯỚI */
+      filter: brightness(35%) blur(4px); 
+    }
+
+    /* Phong cách Card Galaxy */
     .galaxy-card {
       background: rgba(15, 23, 42, 0.75);
       backdrop-filter: blur(12px);
@@ -36,7 +66,17 @@
     }
   </style>
 </head>
-<body class="flex flex-col md:flex-row">
+<body class="flex flex-col md:flex-row relative">
+
+  <!-- FRAME VIDEO YOUTUBE NỀN ĐỘNG (ĐÃ GẮN LINK VIDEO CỦA BẠN) -->
+  <div class="youtube-bg-container">
+    <iframe 
+      src="https://www.youtube.com/embed/sJoKwg0xLX4?autoplay=1&mute=1&controls=0&loop=1&playlist=sJoKwg0xLX4&playsinline=1&rel=0&enablejsapi=1" 
+      title="Galaxy Background" 
+      frameborder="0" 
+      allow="autoplay; encrypted-media">
+    </iframe>
+  </div>
 
   <!-- Sidebar Menu -->
   <aside class="w-full md:w-64 galaxy-card p-5 flex flex-col justify-between border-r border-slate-800 md:min-h-screen">
@@ -44,7 +84,7 @@
       <!-- Logo -->
       <div class="flex items-center gap-3 mb-8">
         <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-500 to-indigo-500 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-cyan-500/30">
-          <i class="fa-solid font-rocket">🚀</i>
+          🚀
         </div>
         <h1 class="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 neon-text">
           TASKNOVA
