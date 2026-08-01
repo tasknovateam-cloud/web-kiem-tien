@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TaskNova - Galaxy Portal</title>
+  <title>TaskNova - Đăng Nhập / Đăng Ký</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+
   <style>
     body {
       background-color: #050614;
@@ -16,7 +16,7 @@
       overflow-x: hidden;
     }
 
-    /* MÀN HÌNH CHỜ (LOADING SCREEN) VŨ TRỤ */
+    /* MÀN HÌNH CHỜ LOADER */
     #loader {
       position: fixed;
       inset: 0;
@@ -30,8 +30,8 @@
     }
 
     .loader-spinner {
-      width: 60px;
-      height: 60px;
+      width: 50px;
+      height: 50px;
       border: 4px solid rgba(56, 189, 248, 0.1);
       border-left-color: #38bdf8;
       border-top-color: #818cf8;
@@ -44,7 +44,7 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* KHUNG CHỨA VIDEO YOUTUBE NỀN TRÀN MÀN HÌNH */
+    /* BACKGROUND YOUTUBE NỀN TRÀN */
     .youtube-bg-container {
       position: fixed;
       top: 0;
@@ -65,23 +65,21 @@
       min-height: 100vh;
       min-width: 177.77vh;
       transform: translate(-50%, -50%) scale(1.4);
-      filter: brightness(50%) blur(1.5px);
+      filter: brightness(45%) blur(2px);
     }
 
-    /* Phong cách Card Galaxy */
+    /* GALAXY CARD */
     .galaxy-card {
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(56, 189, 248, 0.15);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     }
-    .galaxy-card:hover {
-      border-color: rgba(56, 189, 248, 0.4);
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
-    }
+
     .neon-text {
-      text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+      text-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
     }
+
     .neon-btn {
       background: linear-gradient(135deg, #0284c7, #6366f1);
       box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
@@ -90,27 +88,11 @@
       box-shadow: 0 0 25px rgba(56, 189, 248, 0.8);
       transform: translateY(-2px);
     }
-
-    /* ANIMATION CHUYỂN TAB */
-    .tab-content {
-      animation: fadeInSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    @keyframes fadeInSlideUp {
-      from {
-        opacity: 0;
-        transform: translateY(15px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
   </style>
 </head>
-<body class="flex flex-col md:flex-row relative">
+<body class="flex items-center justify-center p-4 relative min-h-screen">
 
-  <!-- MÀN HÌNH CHỜ (LOADER) -->
+  <!-- LOADER CHE NÚT PAUSE/PLAY -->
   <div id="loader">
     <div class="loader-spinner mb-4"></div>
     <div class="flex items-center gap-2">
@@ -119,13 +101,12 @@
         TASKNOVA
       </h2>
     </div>
-    <p class="text-xs text-slate-400 mt-2 tracking-wider" id="loaderText">Đang kết nối cổng không gian...</p>
+    <p class="text-xs text-slate-400 mt-2 tracking-wider">Đang khởi tạo cổng không gian...</p>
   </div>
 
-  <!-- FRAME VIDEO YOUTUBE NỀN -->
+  <!-- YOUTUBE BACKGROUND -->
   <div class="youtube-bg-container">
     <iframe 
-      id="bgVideo"
       src="https://www.youtube-nocookie.com/embed/sJoKwg0xLX4?autoplay=1&mute=1&controls=0&loop=1&playlist=sJoKwg0xLX4&playsinline=1&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&enablejsapi=1" 
       title="Galaxy Background" 
       frameborder="0" 
@@ -134,237 +115,139 @@
     </iframe>
   </div>
 
-  <!-- Sidebar Menu -->
-  <aside class="w-full md:w-64 galaxy-card p-5 flex flex-col justify-between border-r border-slate-800 md:min-h-screen">
-    <div>
-      <div class="flex items-center gap-3 mb-8">
-        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-cyan-500 to-indigo-500 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-cyan-500/30">
-          🚀
-        </div>
-        <h1 class="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 neon-text">
-          TASKNOVA
-        </h1>
+  <!-- MAIN AUTH CONTAINER -->
+  <div class="w-full max-w-md galaxy-card p-8 rounded-3xl space-y-6 relative z-10">
+    
+    <!-- HEADER BRANDING -->
+    <div class="text-center space-y-2">
+      <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-cyan-500 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold mx-auto shadow-lg shadow-cyan-500/40">
+        🚀
       </div>
-
-      <nav class="space-y-2">
-        <button onclick="switchTab('dashboard')" class="nav-btn active w-full flex items-center gap-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-slate-800/60 hover:text-cyan-400">
-          <i class="fa-solid fa-chart-pie w-5"></i> Tổng quan
-        </button>
-        <button onclick="switchTab('tasks')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-slate-800/60 hover:text-cyan-400">
-          <i class="fa-solid fa-list-check w-5"></i> Nhiệm vụ
-        </button>
-        <button onclick="switchTab('withdraw')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-slate-800/60 hover:text-cyan-400">
-          <i class="fa-solid fa-wallet w-5"></i> Rút tiền
-        </button>
-        <button onclick="switchTab('history')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-slate-800/60 hover:text-cyan-400">
-          <i class="fa-solid fa-clock-rotate-left w-5"></i> Lịch sử & Chuỗi
-        </button>
-        <button onclick="switchTab('leaderboard')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-slate-800/60 hover:text-cyan-400">
-          <i class="fa-solid fa-trophy w-5"></i> Bảng xếp hạng
-        </button>
-      </nav>
+      <h1 class="text-3xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 neon-text">
+        TASKNOVA
+      </h1>
+      <p class="text-xs text-slate-400" id="formSubtitle">Đăng nhập để tiếp tục hành trình kiếm CRD</p>
     </div>
 
-    <div class="pt-5 border-t border-slate-800/80 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center font-bold text-cyan-400" id="userAvatar">U</div>
-        <div>
-          <p class="font-semibold text-sm text-slate-200" id="userName">Username</p>
-          <p class="text-xs text-slate-400" id="userEmail">user@gmail.com</p>
-        </div>
-      </div>
-      <button onclick="logout()" class="text-slate-400 hover:text-rose-400 transition" title="Đăng xuất">
-        <i class="fa-solid fa-right-from-bracket"></i>
+    <!-- TAB SWITCHER (ĐĂNG NHẬP / ĐĂNG KÝ) -->
+    <div class="flex bg-slate-900/80 p-1 rounded-xl border border-slate-800">
+      <button id="tabLoginBtn" onclick="toggleAuthMode('login')" class="flex-1 py-2 rounded-lg font-semibold text-sm transition bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+        Đăng Nhập
+      </button>
+      <button id="tabRegisterBtn" onclick="toggleAuthMode('register')" class="flex-1 py-2 rounded-lg font-semibold text-sm transition text-slate-400 hover:text-slate-200">
+        Đăng Ký
       </button>
     </div>
-  </aside>
 
-  <!-- Main Content Area -->
-  <main class="flex-1 p-6 md:p-10 space-y-8 max-w-7xl">
-
-    <!-- 1. TAB TỔNG QUAN -->
-    <section id="tab-dashboard" class="tab-content space-y-6">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 class="text-3xl font-bold text-slate-100">Chào mừng trở lại, <span id="dashWelcomeUser" class="text-cyan-400">Explorer</span> 👋</h2>
-          <p class="text-slate-400 text-sm">Hành trình khám phá dải ngân hà TaskNova của bạn.</p>
+    <!-- FORM ĐĂNG NHẬP & ĐĂNG KÝ -->
+    <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+      
+      <!-- USERNAME INPUT -->
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Tên Đăng Nhập</label>
+        <div class="relative">
+          <i class="fa-solid fa-user absolute left-4 top-3.5 text-slate-500 text-sm"></i>
+          <input type="text" id="usernameInput" required placeholder="Nhập username..." class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-cyan-400">
         </div>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="galaxy-card p-6 rounded-2xl relative overflow-hidden">
-          <div class="absolute -right-4 -bottom-4 text-cyan-500/10 text-8xl"><i class="fa-solid fa-coins"></i></div>
-          <p class="text-slate-400 text-sm">Số dư Ví</p>
-          <h3 class="text-3xl font-black text-cyan-400 mt-2"><span id="userBalance">0</span> CRD</h3>
-          <p class="text-xs text-slate-500 mt-2">Tương đương ~<span id="crdToVnd">0</span> VNĐ</p>
-        </div>
-
-        <div class="galaxy-card p-6 rounded-2xl relative overflow-hidden">
-          <div class="absolute -right-4 -bottom-4 text-orange-500/10 text-8xl"><i class="fa-solid fa-fire"></i></div>
-          <p class="text-slate-400 text-sm">Chuỗi Hoạt Động</p>
-          <h3 class="text-3xl font-black text-orange-400 mt-2"><span id="userStreak">3</span> Ngày 🔥</h3>
-          <p class="text-xs text-orange-300/70 mt-2">Đạt 10 ngày để nhận thưởng 5,000 CRD!</p>
-        </div>
-
-        <div class="galaxy-card p-6 rounded-2xl relative overflow-hidden">
-          <div class="absolute -right-4 -bottom-4 text-indigo-500/10 text-8xl"><i class="fa-solid fa-circle-check"></i></div>
-          <p class="text-slate-400 text-sm">Nhiệm Vụ Đã Làm</p>
-          <h3 class="text-3xl font-black text-indigo-400 mt-2"><span id="tasksCount">0</span></h3>
-          <p class="text-xs text-slate-500 mt-2">Hoàn thành để duy trì chuỗi mỗi ngày</p>
+      <!-- EMAIL INPUT (ẨN TRONG MỐI ĐĂNG NHẬP) -->
+      <div id="emailField" class="hidden">
+        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Địa Chỉ Email</label>
+        <div class="relative">
+          <i class="fa-solid fa-envelope absolute left-4 top-3.5 text-slate-500 text-sm"></i>
+          <input type="email" id="emailInput" placeholder="Nhập email xác thực..." class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-cyan-400">
         </div>
       </div>
-    </section>
 
-    <!-- 2. TAB NHIỆM VỤ -->
-    <section id="tab-tasks" class="tab-content hidden space-y-6">
-      <h2 class="text-2xl font-bold text-slate-100"><i class="fa-solid fa-rocket text-cyan-400 mr-2"></i> Nhiệm Vụ Kiếm CRD</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="galaxy-card p-6 rounded-2xl flex flex-col justify-between space-y-4">
-          <div>
-            <div class="flex justify-between items-start mb-2">
-              <span class="px-3 py-1 bg-cyan-500/10 text-cyan-400 text-xs font-semibold rounded-full border border-cyan-500/20">Traffic Web</span>
-              <span class="text-sm font-bold text-emerald-400">+1,000 CRD</span>
-            </div>
-            <h4 class="font-bold text-slate-200">Tìm kiếm từ khóa Google</h4>
-            <p class="text-xs text-slate-400 mt-1">Truy cập website theo từ khóa chỉ định và lấy mã xác nhận 6 số.</p>
-          </div>
-          <button onclick="startTask('Traffic Google', 1000)" class="w-full py-2.5 rounded-xl font-semibold text-white neon-btn transition">Thực hiện ngay</button>
-        </div>
-        <div class="galaxy-card p-6 rounded-2xl flex flex-col justify-between space-y-4">
-          <div>
-            <div class="flex justify-between items-start mb-2">
-              <span class="px-3 py-1 bg-indigo-500/10 text-indigo-400 text-xs font-semibold rounded-full border border-indigo-500/20">Youtube</span>
-              <span class="text-sm font-bold text-emerald-400">+500 CRD</span>
-            </div>
-            <h4 class="font-bold text-slate-200">Đăng ký kênh Youtube</h4>
-            <p class="text-xs text-slate-400 mt-1">Bấm đăng ký kênh Youtube TaskNova Official và chụp ảnh minh chứng.</p>
-          </div>
-          <button onclick="startTask('Sub Youtube', 500)" class="w-full py-2.5 rounded-xl font-semibold text-white neon-btn transition">Thực hiện ngay</button>
+      <!-- PASSWORD INPUT -->
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1.5">Mật Khẩu</label>
+        <div class="relative">
+          <i class="fa-solid fa-lock absolute left-4 top-3.5 text-slate-500 text-sm"></i>
+          <input type="password" id="passwordInput" required placeholder="••••••••" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-cyan-400">
         </div>
       </div>
-    </section>
 
-    <!-- 3. TAB RÚT TIỀN -->
-    <section id="tab-withdraw" class="tab-content hidden space-y-6">
-      <h2 class="text-2xl font-bold text-slate-100"><i class="fa-solid fa-credit-card text-indigo-400 mr-2"></i> Đổi Thưởng / Rút Tiền</h2>
-      <div class="galaxy-card p-6 md:p-8 rounded-2xl max-w-2xl space-y-5">
-        <div>
-          <label class="block text-sm font-medium text-slate-300 mb-2">Chọn phương thức nhận tiền</label>
-          <select id="withdrawMethod" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-cyan-500">
-            <option value="MOMO">Ví MoMo</option>
-            <option value="BANK">Ngân hàng (MBBank, Vietcombank...)</option>
-            <option value="CARD">Thẻ cào Điện thoại</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-300 mb-2">Số tài khoản / Số điện thoại nhận</label>
-          <input type="text" placeholder="Nhập STK hoặc SĐT MoMo..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-cyan-500">
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-300 mb-2">Số điểm CRD muốn rút (Tối thiểu 10,000 CRD)</label>
-          <input type="number" placeholder="Ví dụ: 10000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-cyan-500">
-        </div>
-        <button class="w-full py-3 rounded-xl font-bold text-white neon-btn transition mt-4">Gửi Yêu Cầu Rút Tiền</button>
-      </div>
-    </section>
-
-    <!-- 4. TAB LỊCH SỬ & CHUỖI -->
-    <section id="tab-history" class="tab-content hidden space-y-6">
-      <h2 class="text-2xl font-bold text-slate-100"><i class="fa-solid fa-clock-rotate-left text-orange-400 mr-2"></i> Lịch Sử & Tiến Trình Chuỗi</h2>
-      <div class="galaxy-card p-6 rounded-2xl space-y-4">
-        <h3 class="font-bold text-slate-200 text-lg">🔥 Chuỗi Ngày Hoạt Động Liên Tiếp</h3>
-        <p class="text-sm text-slate-400">Làm ít nhất 1 nhiệm vụ mỗi ngày để duy trì chuỗi và nhận phần thưởng cực lớn.</p>
-        <div class="grid grid-cols-5 md:grid-cols-10 gap-3 text-center pt-2">
-          <div class="p-3 bg-cyan-500/20 border border-cyan-500/50 rounded-xl text-xs font-bold text-cyan-300">N1 ✔️</div>
-          <div class="p-3 bg-cyan-500/20 border border-cyan-500/50 rounded-xl text-xs font-bold text-cyan-300">N2 ✔️</div>
-          <div class="p-3 bg-orange-500/20 border border-orange-500/50 rounded-xl text-xs font-bold text-orange-300">N3 🔥</div>
-          <div class="p-3 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-slate-500">N4</div>
-          <div class="p-3 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-slate-500">N5</div>
-          <div class="p-3 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-slate-500">N6</div>
-          <div class="p-3 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-slate-500">N7</div>
-          <div class="p-3 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-slate-500">N8</div>
-          <div class="p-3 bg-slate-800/80 border border-slate-700 rounded-xl text-xs text-slate-500">N9</div>
-          <div class="p-3 bg-indigo-500/20 border border-indigo-500/50 rounded-xl text-xs font-bold text-indigo-300">N10 🎁</div>
+      <!-- OTP FIELD (HIỆN KHI CẦN XÁC THỰC OTP) -->
+      <div id="otpField" class="hidden">
+        <label class="block text-xs font-semibold text-cyan-400 mb-1.5">Mã OTP (Xác thực Email)</label>
+        <div class="relative">
+          <i class="fa-solid fa-key absolute left-4 top-3.5 text-slate-500 text-sm"></i>
+          <input type="text" id="otpInput" placeholder="Nhập mã 6 chữ số..." class="w-full bg-slate-900/90 border border-cyan-500/50 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-cyan-400">
         </div>
       </div>
-    </section>
 
-    <!-- 5. TAB BẢNG XẾP HẠNG -->
-    <section id="tab-leaderboard" class="tab-content hidden space-y-6">
-      <h2 class="text-2xl font-bold text-slate-100"><i class="fa-solid fa-trophy text-yellow-400 mr-2"></i> Bảng Xếp Hạng Top Đỉnh Cao</h2>
-      <div class="galaxy-card p-6 rounded-2xl">
-        <p class="text-slate-400 text-sm mb-4">Top 3 thành viên chăm chỉ nhất tuần này sẽ nhận quà bonus đặc biệt!</p>
-        <div class="space-y-3">
-          <div class="flex justify-between items-center p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
-            <span class="font-bold text-yellow-400">🥇 #1. mhang55</span>
-            <span class="font-bold text-slate-200">35,550 CRD</span>
-          </div>
-          <div class="flex justify-between items-center p-3 bg-slate-800/60 rounded-xl">
-            <span class="font-bold text-slate-300">🥈 #2. quyenaz25</span>
-            <span class="font-bold text-slate-200">35,400 CRD</span>
-          </div>
-          <div class="flex justify-between items-center p-3 bg-slate-800/60 rounded-xl">
-            <span class="font-bold text-slate-300">🥉 #3. chutrantuan</span>
-            <span class="font-bold text-slate-200">32,200 CRD</span>
-          </div>
-        </div>
-      </div>
-    </section>
+      <button type="submit" id="submitBtn" class="w-full py-3 rounded-xl font-bold text-white neon-btn transition mt-2 flex justify-center items-center gap-2">
+        <span>Đăng Nhập</span>
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </form>
 
-  </main>
+    <div class="text-center pt-2">
+      <p class="text-xs text-slate-500">Bằng việc tiếp tục, bạn đồng ý với Điều khoản dịch vụ TaskNova</p>
+    </div>
+  </div>
 
   <script>
-    const loader = document.getElementById('loader');
+    let isLoginMode = true;
 
-    // 1. TỰ ĐỘNG BẬT CHE MÀN HÌNH MỖI KHU QUAY LẠI TAB TRÌNH DUYỆT (ĐỂ CHE PLAY/PAUSE)
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
-        // Khi người dùng bấm quay lại Tab này
-        showLoaderTemporarily(1800); // Che 1.8 giây cho Youtube load xong
-      }
-    });
-
-    function showLoaderTemporarily(ms) {
-      if (loader) {
-        loader.style.opacity = '1';
-        loader.style.visibility = 'visible';
-        setTimeout(() => {
+    // TẮT LOADER SAU 2.5s
+    window.addEventListener('load', () => {
+      const loader = document.getElementById('loader');
+      setTimeout(() => {
+        if (loader) {
           loader.style.opacity = '0';
           loader.style.visibility = 'hidden';
-        }, ms);
-      }
-    }
-
-    // Tắt Loader lần đầu mở trang sau 4s
-    window.addEventListener('load', () => {
-      showLoaderTemporarily(4000);
+        }
+      }, 2500);
     });
 
-    // 2. CHUYỂN TAB CÓ ANIMATION
-    function switchTab(tabName) {
-      const allTabs = document.querySelectorAll('.tab-content');
-      allTabs.forEach(el => el.classList.add('hidden'));
+    // CHUYỂN ĐỔI GIAO DIỆN ĐĂNG NHẬP <-> ĐĂNG KÝ
+    function toggleAuthMode(mode) {
+      isLoginMode = mode === 'login';
+      const emailField = document.getElementById('emailField');
+      const formSubtitle = document.getElementById('formSubtitle');
+      const submitBtn = document.getElementById('submitBtn');
+      const tabLoginBtn = document.getElementById('tabLoginBtn');
+      const tabRegisterBtn = document.getElementById('tabRegisterBtn');
 
-      const selectedTab = document.getElementById(`tab-${tabName}`);
-      if (selectedTab) {
-        selectedTab.classList.remove('hidden');
-        selectedTab.style.animation = 'none';
-        selectedTab.offsetHeight;
-        selectedTab.style.animation = 'fadeInSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+      if (isLoginMode) {
+        emailField.classList.add('hidden');
+        document.getElementById('emailInput').removeAttribute('required');
+        formSubtitle.innerText = 'Đăng nhập để tiếp tục hành trình kiếm CRD';
+        submitBtn.querySelector('span').innerText = 'Đăng Nhập';
+        
+        tabLoginBtn.className = "flex-1 py-2 rounded-lg font-semibold text-sm transition bg-cyan-500/20 text-cyan-400 border border-cyan-500/30";
+        tabRegisterBtn.className = "flex-1 py-2 rounded-lg font-semibold text-sm transition text-slate-400 hover:text-slate-200";
+      } else {
+        emailField.classList.remove('hidden');
+        document.getElementById('emailInput').setAttribute('required', 'true');
+        formSubtitle.innerText = 'Tạo tài khoản mới để nhận 1,000 CRD thưởng';
+        submitBtn.querySelector('span').innerText = 'Tạo Tài Khoản';
+
+        tabRegisterBtn.className = "flex-1 py-2 rounded-lg font-semibold text-sm transition bg-cyan-500/20 text-cyan-400 border border-cyan-500/30";
+        tabLoginBtn.className = "flex-1 py-2 rounded-lg font-semibold text-sm transition text-slate-400 hover:text-slate-200";
       }
     }
 
-    // 3. XỬ LÝ ĐĂNG XUẤT TRIỆT ĐỂ
-    function logout() {
-      // Xóa hết thông tin tài khoản đang lưu
-      localStorage.clear();
-      sessionStorage.clear();
-      
-      alert('Đã đăng xuất thành công!');
+    // XỬ LÝ SUBMIT ĐĂNG NHẬP / ĐĂNG KÝ
+    function handleAuthSubmit(event) {
+      event.preventDefault();
+      const username = document.getElementById('usernameInput').value;
 
-      // Thử chuyển hướng sang trang đăng nhập (kiểm tra các file phổ biến)
-      // Nếu dự án của bạn chưa có login.html, nó sẽ tự động tải lại trang chủ sạch
-      window.location.href = 'login.html';
+      // Lưu Token giả lập vào localStorage
+      localStorage.setItem('token', 'tasknova_user_token_' + Date.now());
+      localStorage.setItem('username', username);
+
+      if (isLoginMode) {
+        alert('Đăng nhập thành công! Đang chuyển hướng đến Dashboard...');
+      } else {
+        alert('Đăng ký tài khoản thành công! Đang chuyển hướng...');
+      }
+
+      // CHUYỂN HƯỚNG NGAY TỚI TRANG DASHBOARD.HTML
+      window.location.href = 'dashboard.html';
     }
   </script>
 </body>
