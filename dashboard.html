@@ -10,13 +10,19 @@
   <style>
     body {
       background-color: #050614;
+      /* DÙNG ĐÚNG HÌNH ẢNH SAO BĂNG SHUTTERSTOCK CỦA BẠN */
+      background-image: linear-gradient(rgba(5, 6, 20, 0.65), rgba(5, 6, 20, 0.8)), 
+                        url('https://image.shutterstock.com/display_pic_with_logo/3593954845/3593954845.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
       color: #e2e8f0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
     }
 
-    /* MÀN HÌNH CHỜ LOADER CHE PHỦ KHÔNG GIAN */
+    /* MÀN HÌNH CHỜ LOADER */
     #loader {
       position: fixed;
       inset: 0;
@@ -26,18 +32,17 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      /* Animation làm mờ 0.5s nhẹ nhàng */
-      transition: opacity 0.5s ease, visibility 0.5s ease;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
     }
 
     .loader-spinner {
-      width: 60px;
-      height: 60px;
+      width: 50px;
+      height: 50px;
       border: 4px solid rgba(56, 189, 248, 0.1);
       border-left-color: #38bdf8;
       border-top-color: #818cf8;
       border-radius: 50%;
-      animation: spin 1s linear infinite;
+      animation: spin 0.8s linear infinite;
     }
 
     @keyframes spin {
@@ -45,40 +50,16 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* KHUNG CHỨA VIDEO YOUTUBE NỀN */
-    .youtube-bg-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: -10;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    .youtube-bg-container iframe {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 100vw;
-      height: 56.25vw;
-      min-height: 100vh;
-      min-width: 177.77vh;
-      transform: translate(-50%, -50%) scale(1.4);
-      filter: brightness(50%) blur(1.5px);
-    }
-
     /* Phong cách Card Galaxy */
     .galaxy-card {
-      background: rgba(15, 23, 42, 0.75);
+      background: rgba(15, 23, 42, 0.82);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(56, 189, 248, 0.15);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
     }
     .galaxy-card:hover {
       border-color: rgba(56, 189, 248, 0.4);
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
     }
     .neon-text {
       text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
@@ -92,15 +73,14 @@
       transform: translateY(-2px);
     }
 
-    /* ANIMATION CHUYỂN TAB CỦA ỨNG DỤNG */
     .tab-content {
-      animation: fadeInSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: fadeInSlideUp 0.3s ease forwards;
     }
 
     @keyframes fadeInSlideUp {
       from {
         opacity: 0;
-        transform: translateY(15px);
+        transform: translateY(10px);
       }
       to {
         opacity: 1;
@@ -111,7 +91,7 @@
 </head>
 <body class="flex flex-col md:flex-row relative">
 
-  <!-- MÀN HÌNH CHỜ (LOADER CHE PHỦ) -->
+  <!-- LOADER NHẸ -->
   <div id="loader">
     <div class="loader-spinner mb-4"></div>
     <div class="flex items-center gap-2">
@@ -120,19 +100,6 @@
         TASKNOVA
       </h2>
     </div>
-    <p class="text-xs text-slate-400 mt-2 tracking-wider">Đang kết nối cổng không gian...</p>
-  </div>
-
-  <!-- FRAME VIDEO YOUTUBE NỀN -->
-  <div class="youtube-bg-container">
-    <iframe 
-      id="bgYoutube"
-      src="https://www.youtube-nocookie.com/embed/sJoKwg0xLX4?autoplay=1&mute=1&controls=0&loop=1&playlist=sJoKwg0xLX4&playsinline=1&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&enablejsapi=1" 
-      title="Galaxy Background" 
-      frameborder="0" 
-      allow="autoplay; encrypted-media; picture-in-picture"
-      style="pointer-events: none;">
-    </iframe>
   </div>
 
   <!-- Sidebar Menu -->
@@ -229,7 +196,7 @@
             <h4 class="font-bold text-slate-200">Tìm kiếm từ khóa Google</h4>
             <p class="text-xs text-slate-400 mt-1">Truy cập website theo từ khóa chỉ định và lấy mã xác nhận 6 số.</p>
           </div>
-          <button onclick="startTask('Traffic Google', 1000)" class="w-full py-2.5 rounded-xl font-semibold text-white neon-btn transition">Thực hiện ngay</button>
+          <button class="w-full py-2.5 rounded-xl font-semibold text-white neon-btn transition">Thực hiện ngay</button>
         </div>
 
         <div class="galaxy-card p-6 rounded-2xl flex flex-col justify-between space-y-4">
@@ -241,7 +208,7 @@
             <h4 class="font-bold text-slate-200">Đăng ký kênh Youtube</h4>
             <p class="text-xs text-slate-400 mt-1">Bấm đăng ký kênh Youtube TaskNova Official và chụp ảnh minh chứng.</p>
           </div>
-          <button onclick="startTask('Sub Youtube', 500)" class="w-full py-2.5 rounded-xl font-semibold text-white neon-btn transition">Thực hiện ngay</button>
+          <button class="w-full py-2.5 rounded-xl font-semibold text-white neon-btn transition">Thực hiện ngay</button>
         </div>
       </div>
     </section>
@@ -316,43 +283,21 @@
   </main>
 
   <script>
-    const loader = document.getElementById('loader');
-    let hideTimer = null;
+    const username = localStorage.getItem('username') || 'Explorer';
+    document.getElementById('userName').innerText = username;
+    document.getElementById('dashWelcomeUser').innerText = username;
+    document.getElementById('userAvatar').innerText = username.charAt(0).toUpperCase();
 
-    // 1. TẮT TÍNH NĂNG TRANSITION BAN ĐẦU ĐỂ BẬT LOADER TỨC THÌ (0 giây) KHÔNG BỊ TRỄ
-    function triggerInstantLoader(durationMs) {
-      if (!loader) return;
-      
-      // Bật hiện Loader ngay lập tức
-      loader.style.transition = 'none';
-      loader.style.opacity = '1';
-      loader.style.visibility = 'visible';
-
-      // Xóa timer cũ nếu có
-      if (hideTimer) clearTimeout(hideTimer);
-
-      // Chờ trong durationMs rồi mờ dần biến mất
-      hideTimer = setTimeout(() => {
-        loader.style.transition = 'opacity 0.5s ease, visibility 0.5s ease';
-        loader.style.opacity = '0';
-        loader.style.visibility = 'hidden';
-      }, durationMs);
-    }
-
-    // LẦN ĐẦU MỞ TRANG: BẬT LOADER ĐÚNG 5 GIÂY (5000ms)
     window.addEventListener('load', () => {
-      triggerInstantLoader(5000);
+      const loader = document.getElementById('loader');
+      setTimeout(() => {
+        if (loader) {
+          loader.style.opacity = '0';
+          loader.style.visibility = 'hidden';
+        }
+      }, 500);
     });
 
-    // KHI CHUYỂN TAB TRÌNH DUYỆT VÀ QUAY LẠI: HIỆN LOADER NGAY LẬP TỨC ĐỂ CHE NÚT YOUTUBE
-    // CHỈ HIỆN MÀN HÌNH CHỜ, TUYỆT ĐỐI KHÔNG RELOAD TRANG ĐỂ DỮ LIỆU USER ĐANG LÀM KHÔNG MẤT
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
-        triggerInstantLoader(2000); // Hiện loader ngay lập tức 2s đủ cho video Youtube chạy lại ẩn bên dưới
-      }
-    });
-
-    // 2. CHUYỂN TAB GIAO DIỆN MƯỢT MÀ
     function switchTab(tabName) {
       const allTabs = document.querySelectorAll('.tab-content');
       allTabs.forEach(el => el.classList.add('hidden'));
@@ -360,18 +305,14 @@
       const selectedTab = document.getElementById(`tab-${tabName}`);
       if (selectedTab) {
         selectedTab.classList.remove('hidden');
-        selectedTab.style.animation = 'none';
-        selectedTab.offsetHeight;
-        selectedTab.style.animation = 'fadeInSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
       }
     }
 
-    // 3. ĐĂNG XUẤT CHUẨN VỀ TRANG INDEX.HTML (ĐĂNG NHẬP / ĐĂNG KÝ)
     function logout() {
       localStorage.clear();
       sessionStorage.clear();
       alert('Đã đăng xuất thành công!');
-      window.location.href = 'index.html'; // Chuyển thẳng về index.html
+      window.location.href = 'index.html';
     }
   </script>
 </body>
