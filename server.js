@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const path = require('path');
+const fetch = require('node-fetch');
 
 const app = express();
 app.use(express.json());
@@ -25,17 +26,24 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 const otpStore = new Map();
 
-// Hàm gửi Email qua Brevo REST API (HTTPS - Không bao giờ bị Render chặn port)
+// Hàm gửi Email qua Brevo REST API (Chạy qua HTTPS, KHÔNG lo bị chặn port)
 async function sendBrevoEmail(toEmail, otp) {
+  const apiKey = process.env.BREVO_API_KEY;
+  const senderEmail = process.env.EMAIL_USER || 'tasknova.team@gmail.com';
+
+  if (!apiKey) {
+    throw new Error('Thiếu BREVO_API_KEY trong biến môi trường!');
+  }
+
   const response = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
     headers: {
       'accept': 'application/json',
-      'api-key': process.env.BREVO_API_KEY,
+      'api-key': apiKey,
       'content-type': 'application/json'
     },
     body: JSON.stringify({
-      sender: { name: 'TaskNova Support', email: process.env.EMAIL_USER || 'tasknova.team@gmail.com' },
+      sender: { name: 'TaskNova Support', email: senderEmail },
       to: [{ email: toEmail }],
       subject: 'Mã xác thực OTP đăng ký tài khoản TaskNova',
       htmlContent: `
@@ -54,10 +62,14 @@ async function sendBrevoEmail(toEmail, otp) {
     })
   });
 
+  const responseData = await response.json();
+
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(JSON.stringify(errorData));
+    console.error('Chi tiết lỗi từ Brevo:', responseData);
+    throw new Error(JSON.stringify(responseData));
   }
+
+  return responseData;
 }
 
 // API: Gửi mã OTP
@@ -89,8 +101,8 @@ app.post('/api/send-otp', async (req, res) => {
     res.json({ message: 'Mã OTP đã được gửi về Gmail của bạn!' });
 
   } catch (err) {
-    console.error('Lỗi gửi OTP:', err);
-    res.status(500).json({ error: 'Không thể gửi email OTP. Kiểm tra lại địa chỉ Gmail!' });
+    console.error('Lỗi gửi OTP:', err.message);
+    res.status(500).json({ error: 'Không thể gửi email OTP. Kiểm tra lại thông tin!' });
   }
 });
 
