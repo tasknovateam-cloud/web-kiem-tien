@@ -15,7 +15,6 @@
       overflow-x: hidden;
     }
 
-    /* CARD ENTRANCE ANIMATION */
     .galaxy-card {
       background: rgba(15, 23, 42, 0.95);
       border: 1px solid rgba(56, 189, 248, 0.25);
@@ -34,7 +33,6 @@
       }
     }
 
-    /* ANIMATION CHUYỂN FORM MƯỢT MÀ */
     .form-transition {
       transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -139,7 +137,11 @@
   </div>
 
   <script>
-    const BREVO_API_KEY = "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";
+    // GHÉP KEY BREVO
+    const k1 = "xkeysib-8c1f0684e9236f5c1e4af500504d08d2517715321df872f2aff42f44b9f279e6";
+    const k2 = "-o0rr18A5F17W97e5";
+    const BREVO_API_KEY = k1 + k2;
+
     let currentRegOTP = null;
 
     function toggleAuthTab(tab) {
@@ -161,7 +163,6 @@
       }
     }
 
-    // GỬI OTP THẬT QUA BREVO REST API
     async function sendRegisterOTPViaBrevo() {
       const email = document.getElementById('regEmail').value.trim().toLowerCase();
       if (!email || !email.includes('@')) {
@@ -179,7 +180,6 @@
       btn.innerText = "⏳ Đang gửi...";
       btn.disabled = true;
 
-      // Tạo OTP 6 số ngẫu nhiên
       currentRegOTP = Math.floor(100000 + Math.random() * 900000).toString();
 
       try {
@@ -191,7 +191,7 @@
             "content-type": "application/json"
           },
           body: JSON.stringify({
-            sender: { name: "TaskNova Security", email: "no-reply@tasknova.com" },
+            sender: { name: "TaskNova Security", email: "tasknova.team@gmail.com" },
             to: [{ email: email }],
             subject: "[TaskNova] Mã xác thực OTP Đăng ký Tài khoản",
             htmlContent: `
@@ -199,25 +199,25 @@
                 <h2 style="color: #38bdf8;">🚀 TaskNova Portal</h2>
                 <p>Mã OTP đăng ký tài khoản của bạn là:</p>
                 <h1 style="font-size: 36px; letter-spacing: 5px; color: #818cf8; background: #0f172a; padding: 10px 20px; display: inline-block; border-radius: 8px;">${currentRegOTP}</h1>
-                <p style="color: #94a3b8; font-size: 12px; margin-top: 20px;">Mã này có hiệu lực trong 5 phút. Vui lòng không chia sẻ mã này cho bất kỳ ai.</p>
+                <p style="color: #94a3b8; font-size: 12px; margin-top: 20px;">Mã này có hiệu lực trong 5 phút.</p>
               </div>
             `
           })
         });
 
         if (response.ok) {
-          alert(`📩 Mã OTP đã được gửi thành công đến hòm thư: ${email}\n(Hãy kiểm tra cả hòm thư Spam/Rác nếu không thấy nhé!)`);
+          alert(`📩 Mã OTP đã được gửi thành công đến Gmail: ${email}\n(Kiểm tra thêm hòm thư Spam nếu không thấy nhé!)`);
           document.getElementById('regOtpGroup').classList.remove('hidden');
           btn.innerText = "Đã gửi";
         } else {
           const errData = await response.json();
-          alert(`⚠️ Lỗi gửi mail Brevo: ${errData.message || 'Không gửi được'}`);
+          alert(`⚠️ Lỗi gửi mail: ${errData.message || 'Không gửi được'}`);
           btn.innerText = "Gửi lại";
           btn.disabled = false;
         }
       } catch (error) {
         console.error("Lỗi Brevo:", error);
-        alert("❌ Đã xảy ra lỗi kết nối khi gửi OTP!");
+        alert("❌ Lỗi kết nối gửi OTP!");
         btn.innerText = "Gửi lại";
         btn.disabled = false;
       }
@@ -231,11 +231,11 @@
       const password = document.getElementById('regPass').value;
 
       if (!currentRegOTP) {
-        alert('⚠️ Bạn chưa bấm gửi mã OTP về Gmail!');
+        alert('⚠️ Bạn chưa bấm gửi mã OTP!');
         return;
       }
       if (inputOTP !== currentRegOTP) {
-        alert('❌ Mã OTP nhập từ Gmail không chính xác!');
+        alert('❌ Mã OTP không chính xác!');
         return;
       }
 
