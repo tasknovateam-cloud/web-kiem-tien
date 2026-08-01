@@ -3,14 +3,10 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const path = require('path');
-const { Resend } = require('resend');
 
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
-
-// Khởi tạo Resend API Client
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 // 1. Kết nối MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -27,11 +23,44 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model('User', userSchema);
-
-// Lưu tạm OTP trong bộ nhớ (Email -> { otp, username, password, expires })
 const otpStore = new Map();
 
-// API: Gửi mã OTP qua Resend HTTPS API
+// Hàm gửi Email qua Brevo REST API (HTTPS - Không bao giờ bị Render chặn port)
+async function sendBrevoEmail(toEmail, otp) {
+  const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'accept': 'application/json',
+      'api-key': process.env.BREVO_API_KEY,
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      sender: { name: 'TaskNova Support', email: process.env.EMAIL_USER || 'tasknova.team@gmail.com' },
+      to: [{ email: toEmail }],
+      subject: 'Mã xác thực OTP đăng ký tài khoản TaskNova',
+      htmlContent: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
+          <div style="max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px;">
+            <h2 style="color: #0284c7; text-align: center;">TaskNova OTP</h2>
+            <p>Chào bạn,</p>
+            <p>Mã xác thực OTP để đăng ký tài khoản của bạn là:</p>
+            <div style="text-align: center; margin: 20px 0;">
+              <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #0284c7; background: #e0f2fe; padding: 10px 20px; border-radius: 8px;">${otp}</span>
+            </div>
+            <p style="color: #666; font-size: 13px;">Mã này có hiệu lực trong 5 phút. Vui lòng không chia sẻ cho ai.</p>
+          </div>
+        </div>
+      `
+    })
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(JSON.stringify(errorData));
+  }
+}
+
+// API: Gửi mã OTP
 app.post('/api/send-otp', async (req, res) => {
   try {
     const { username, password, email } = req.body;
@@ -54,30 +83,8 @@ app.post('/api/send-otp', async (req, res) => {
       expires: Date.now() + 5 * 60 * 1000
     });
 
-    // Gửi email bằng Resend API
-    const { data, error } = await resend.emails.send({
-      from: 'TaskNova Support <onboarding@resend.dev>',
-      to: [email],
-      subject: 'Mã xác thực OTP đăng ký tài khoản TaskNova',
-      html: `
-        <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
-          <div style="max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px;">
-            <h2 style="color: #0284c7; text-align: center;">TaskNova OTP</h2>
-            <p>Chào bạn,</p>
-            <p>Mã xác thực OTP để đăng ký tài khoản của bạn là:</p>
-            <div style="text-align: center; margin: 20px 0;">
-              <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #0284c7; background: #e0f2fe; padding: 10px 20px; border-radius: 8px;">${otp}</span>
-            </div>
-            <p style="color: #666; font-size: 13px;">Mã này có hiệu lực trong 5 phút. Vui lòng không chia sẻ mã này cho ai.</p>
-          </div>
-        </div>
-      `
-    });
-
-    if (error) {
-      console.error('Lỗi Resend API:', error);
-      return res.status(500).json({ error: 'Lỗi gửi email từ Resend!' });
-    }
+    // Gọi Brevo API gửi mail
+    await sendBrevoEmail(email, otp);
 
     res.json({ message: 'Mã OTP đã được gửi về Gmail của bạn!' });
 
@@ -87,24 +94,18 @@ app.post('/api/send-otp', async (req, res) => {
   }
 });
 
-// API: Xác nhận OTP & Tạo tài khoản
+// API: Xác nhận OTP & Đăng ký
 app.post('/api/verify-otp', async (req, res) => {
   try {
     const { email, otp } = req.body;
     const record = otpStore.get(email);
 
-    if (!record) {
-      return res.status(400).json({ error: 'Mã OTP đã hết hạn hoặc chưa được yêu cầu!' });
-    }
-
+    if (!record) return res.status(400).json({ error: 'Mã OTP đã hết hạn!' });
     if (Date.now() > record.expires) {
       otpStore.delete(email);
       return res.status(400).json({ error: 'Mã OTP đã hết hạn!' });
     }
-
-    if (record.otp !== otp) {
-      return res.status(400).json({ error: 'Mã OTP không chính xác!' });
-    }
+    if (record.otp !== otp) return res.status(400).json({ error: 'Mã OTP không chính xác!' });
 
     const hashedPassword = await bcrypt.hash(record.password, 10);
     const newUser = new User({
@@ -128,10 +129,8 @@ app.post('/api/verify-otp', async (req, res) => {
       token,
       user: { id: newUser._id, name: newUser.username, email: newUser.email, balance: newUser.balance }
     });
-
   } catch (err) {
-    console.error('Lỗi xác nhận OTP:', err);
-    res.status(500).json({ error: 'Đã xảy ra lỗi khi tạo tài khoản!' });
+    res.status(500).json({ error: 'Lỗi hệ thống khi tạo tài khoản!' });
   }
 });
 
@@ -140,15 +139,10 @@ app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
-
-    if (!user) {
-      return res.status(400).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng!' });
-    }
+    if (!user) return res.status(400).json({ error: 'Mật khẩu hoặc tên đăng nhập không đúng!' });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ error: 'Tên đăng nhập hoặc mật khẩu không đúng!' });
-    }
+    if (!isMatch) return res.status(400).json({ error: 'Mật khẩu hoặc tên đăng nhập không đúng!' });
 
     const token = jwt.sign(
       { userId: user._id, username: user.username },
@@ -161,10 +155,8 @@ app.post('/api/login', async (req, res) => {
       token,
       user: { id: user._id, name: user.username, email: user.email, balance: user.balance }
     });
-
   } catch (err) {
-    console.error('Lỗi đăng nhập:', err);
-    res.status(500).json({ error: 'Đã xảy ra lỗi hệ thống!' });
+    res.status(500).json({ error: 'Lỗi hệ thống khi đăng nhập!' });
   }
 });
 
@@ -173,6 +165,4 @@ app.get('*', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server đang chạy tại port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server đang chạy tại port ${PORT}`));
