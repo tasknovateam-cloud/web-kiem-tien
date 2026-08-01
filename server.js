@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 const otpStore = new Map();
 
-// Hàm gửi Email qua Brevo REST API (Dùng fetch native của Node.js)
+// Hàm gửi Email qua Brevo REST API
 async function sendBrevoEmail(toEmail, otp) {
   const apiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.EMAIL_USER || 'tasknova.team@gmail.com';
@@ -170,7 +170,8 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-app.get('*', (req, res) => {
+// Sửa lỗi PathError wildcard ở đây (dùng /(.*) thay vì *)
+app.get(/(.*)/, (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
