@@ -64,9 +64,9 @@
       height: 56.25vw;
       min-height: 100vh;
       min-width: 177.77vh;
-      transform: translate(-50%, -50%) scale(1.4); /* Phóng to 1.4x để giấu nút pause/play ẩn bên dưới */
+      transform: translate(-50%, -50%) scale(1.4); /* Phóng to để giấu nút pause/play ẩn bên dưới */
       
-      /* --- VỊ TRÍ CHỈNH ĐỘ MỜ VÀ ĐỘ SÁNG BÊN DƯỚI --- */
+      /* CHỈNH ĐỘ MỜ VÀ ĐỘ SÁNG BÊN DƯỚI */
       filter: brightness(50%) blur(1.5px);
     }
 
@@ -112,7 +112,7 @@
 </head>
 <body class="flex flex-col md:flex-row relative">
 
-  <!-- 1. MÀN HÌNH CHỜ (LOADER) CHE MÀN HÌNH LÚC VIDEO DỰNG SẴN -->
+  <!-- 1. MÀN HÌNH CHỜ (LOADER 4 GIÂY) CHE MÀN HÌNH LÚC VIDEO DỰNG SẴN -->
   <div id="loader">
     <div class="loader-spinner mb-4"></div>
     <div class="flex items-center gap-2">
@@ -383,18 +383,18 @@
   </main>
 
   <script>
-    // 1. TỰ ĐỘNG TẮT MÀN HÌNH CHỜ SAU 2.5 GIÂY LÚC VIDEO NỀN ĐÃ BUFF BẮT ĐẦU CHẠY
+    // TỰ ĐỘNG TẮT MÀN HÌNH CHỜ ĐÚNG 4 GIÂY (4000ms)
     window.addEventListener('load', () => {
+      const loader = document.getElementById('loader');
       setTimeout(() => {
-        const loader = document.getElementById('loader');
         if (loader) {
           loader.style.opacity = '0';
           loader.style.visibility = 'hidden';
         }
-      }, 5000); // 2.5 giây đủ cho Youtube load video ngầm
+      }, 5000); // 4000ms = 4 giây
     });
 
-    // 2. CHUYỂN TAB CÓ ANIMATION TỰ NHIÊN MƯỢT MÀ
+    // CHUYỂN TAB CÓ ANIMATION
     function switchTab(tabName) {
       const allTabs = document.querySelectorAll('.tab-content');
       allTabs.forEach(el => {
@@ -404,17 +404,17 @@
       const selectedTab = document.getElementById(`tab-${tabName}`);
       if (selectedTab) {
         selectedTab.classList.remove('hidden');
-        // Trigger lại animation trượt nhẹ lên
         selectedTab.style.animation = 'none';
-        selectedTab.offsetHeight; /* trigger reflow */
+        selectedTab.offsetHeight;
         selectedTab.style.animation = 'fadeInSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
       }
     }
 
+    // XỬ LÝ ĐĂNG XUẤT CHUẨN ĐƯA VỀ TRANG ĐĂNG NHẬP
     function logout() {
       localStorage.removeItem('token');
       alert('Đã đăng xuất tài khoản!');
-      location.reload();
+      window.location.href = 'login.html'; // Chuyển về trang login
     }
   </script>
 </body>
