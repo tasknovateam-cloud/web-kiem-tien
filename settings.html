@@ -93,8 +93,8 @@
         </div>
         <div>
           <p class="text-[10px] uppercase font-bold text-slate-400 font-scifi">SỐ DƯ</p>
-          <p class="text-lg font-bold text-amber-400 font-scifi">8.364 Xu</p>
-          <p class="text-[10px] text-slate-500">Xu khả dụng</p>
+          <p class="text-lg font-bold text-amber-400 font-scifi" id="statBalance">0 CRD</p>
+          <p class="text-[10px] text-slate-500">Số dư khả dụng</p>
         </div>
       </div>
 
@@ -105,20 +105,20 @@
         </div>
         <div>
           <p class="text-[10px] uppercase font-bold text-slate-400 font-scifi">TỔNG TASK</p>
-          <p class="text-lg font-bold text-slate-100 font-scifi">0</p>
-          <p class="text-[10px] text-slate-500">nhiệm vụ</p>
+          <p class="text-lg font-bold text-slate-100 font-scifi" id="statTasks">0</p>
+          <p class="text-[10px] text-slate-500">nhiệm vụ đã làm</p>
         </div>
       </div>
 
-      <!-- CHUỖI NGÀY (Thay thế cho EXP) -->
+      <!-- CHUỖI NGÀY -->
       <div class="glass-panel p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center gap-4">
         <div class="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-400 text-xl shrink-0">
           <i class="fa-solid fa-fire"></i>
         </div>
         <div>
           <p class="text-[10px] uppercase font-bold text-slate-400 font-scifi">CHUỖI NGÀY</p>
-          <p class="text-lg font-bold text-orange-400 font-scifi">0</p>
-          <p class="text-[10px] text-slate-500">ngày liên tục</p>
+          <p class="text-lg font-bold text-orange-400 font-scifi" id="statStreak">1 Ngày</p>
+          <p class="text-[10px] text-slate-500">điểm danh liên tục</p>
         </div>
       </div>
     </div>
@@ -186,8 +186,39 @@
   </main>
 
   <script>
+    // 1. TỰ ĐỘNG TÍNH VÀ CẬP NHẬT CHUỖI NGÀY
+    function updateStreakLogic() {
+      const today = new Date().toDateString();
+      const lastLogin = localStorage.getItem('lastLoginDate');
+      let streak = parseInt(localStorage.getItem('streakCount') || '1');
+
+      if (!lastLogin) {
+        localStorage.setItem('lastLoginDate', today);
+        localStorage.setItem('streakCount', '1');
+      } else if (lastLogin !== today) {
+        const lastDate = new Date(lastLogin);
+        const currentDate = new Date(today);
+        const diffTime = Math.abs(currentDate - lastDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 1) {
+          streak += 1;
+        } else if (diffDays > 1) {
+          streak = 1;
+        }
+
+        localStorage.setItem('streakCount', streak.toString());
+        localStorage.setItem('lastLoginDate', today);
+      }
+      return streak;
+    }
+
+    // 2. KHỞI TẠO DỮ LIỆU & ĐỔ RA GIAO DIỆN
+    const currentStreak = updateStreakLogic();
     const user = localStorage.getItem('username') || 'blackx';
     const email = localStorage.getItem('userEmail') || 'pryzexxol@gmail.com';
+    const rawBalance = parseFloat(localStorage.getItem('balance') || '0');
+    const tasks = localStorage.getItem('completedTasks') || '0';
 
     document.getElementById('displayName').innerText = user;
     document.getElementById('displayEmail').innerText = email;
@@ -197,6 +228,11 @@
     const firstChar = user.charAt(0).toUpperCase();
     document.getElementById('headerAvatar').innerText = firstChar;
     document.getElementById('sidebarAvatar').innerText = firstChar;
+
+    // Hiển thị chỉ số thực tế
+    document.getElementById('statBalance').innerText = `${rawBalance.toLocaleString('vi-VN')} CRD`;
+    document.getElementById('statTasks').innerText = tasks;
+    document.getElementById('statStreak').innerText = `${currentStreak} Ngày`;
 
     function logout() {
       localStorage.removeItem('username');
