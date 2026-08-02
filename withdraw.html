@@ -57,7 +57,7 @@
           <p class="text-[10px] text-slate-500 truncate" id="sidebarEmail">pryzexxol@gmail.com</p>
         </div>
       </div>
-      <button onclick="logout()" class="text-slate-400 hover:text-rose-400 text-xs p-2 transition">
+      <button onclick="logout()" class="text-slate-400 hover:text-rose-400 text-xs p-2 transition" title="Đăng xuất">
         <i class="fa-solid fa-right-from-bracket"></i>
       </button>
     </div>
@@ -96,19 +96,20 @@
         <div id="alertBox" class="hidden p-3.5 rounded-xl text-xs font-semibold flex items-center gap-2"></div>
 
         <form id="withdrawForm" onsubmit="handleWithdraw(event)" class="space-y-4">
+          
           <!-- CHỌN PHƯƠNG THỨC -->
           <div>
             <label class="block text-xs font-semibold text-slate-300 mb-2">Phương thức nhận tiền</label>
             <div class="grid grid-cols-2 gap-3">
               <label class="cursor-pointer">
-                <input type="radio" name="method" value="bank" checked class="peer hidden">
+                <input type="radio" name="method" value="bank" checked onchange="toggleMethod('bank')" class="peer hidden">
                 <div class="p-3 bg-slate-950/60 border border-slate-800 rounded-xl peer-checked:border-cyan-500 peer-checked:bg-cyan-500/10 flex items-center gap-3 transition">
                   <i class="fa-solid fa-building-columns text-cyan-400"></i>
                   <span class="text-xs font-bold text-slate-200">Ngân Hàng</span>
                 </div>
               </label>
               <label class="cursor-pointer">
-                <input type="radio" name="method" value="momo" class="peer hidden">
+                <input type="radio" name="method" value="momo" onchange="toggleMethod('momo')" class="peer hidden">
                 <div class="p-3 bg-slate-950/60 border border-slate-800 rounded-xl peer-checked:border-pink-500 peer-checked:bg-pink-500/10 flex items-center gap-3 transition">
                   <i class="fa-solid fa-mobile-screen text-pink-400"></i>
                   <span class="text-xs font-bold text-slate-200">Ví MoMo</span>
@@ -120,18 +121,18 @@
           <!-- THÔNG TIN TÀI KHOẢN -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Tên Ngân hàng / Ví</label>
-              <input type="text" id="bankName" placeholder="VD: MBBank, Vietcombank, MoMo..." required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+              <label class="block text-xs font-semibold text-slate-400 mb-1" id="bankLabel">Tên Ngân hàng</label>
+              <input type="text" id="bankName" placeholder="VD: MBBank, Vietcombank..." required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 disabled:opacity-50">
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-400 mb-1">Số tài khoản / Số MoMo</label>
+              <label class="block text-xs font-semibold text-slate-400 mb-1" id="accountLabel">Số tài khoản</label>
               <input type="text" id="accountNumber" placeholder="Nhập số tài khoản" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
             </div>
           </div>
 
           <div>
             <label class="block text-xs font-semibold text-slate-400 mb-1">Tên chủ tài khoản (Viết hoa không dấu)</label>
-            <input type="text" id="accountHolder" placeholder="NGUYEN VAN A" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 uppercase focus:outline-none focus:border-cyan-500">
+            <input type="text" id="accountHolder" placeholder="NGUYEN VAN A" required oninput="sanitizeAccountHolder(this)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 uppercase focus:outline-none focus:border-cyan-500">
           </div>
 
           <!-- NHẬP SỐ TIỀN RÚT -->
@@ -151,13 +152,13 @@
             </div>
           </div>
 
-          <button type="submit" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs py-3 rounded-xl transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
+          <button type="submit" id="submitBtn" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs py-3 rounded-xl transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
             <i class="fa-solid fa-circle-check"></i> XÁC NHẬN RÚT TIỀN
           </button>
         </form>
       </div>
 
-      <!-- LỊCH SỬ RÚT TIỀN THỰC TẾ -->
+      <!-- LỊCH SỬ RÚT TIỀN -->
       <div class="glass-panel p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 flex flex-col justify-between">
         <div>
           <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2 mb-4">
@@ -181,6 +182,12 @@
   <script>
     const MIN_WITHDRAW = 50000;
 
+    // BOT TOKEN CỦA BẠN
+    const TELEGRAM_BOT_TOKEN = '8763399524:AAHWg_5Ky2P9HkhNOZDud0d2fQvQVVfcaTs';
+    
+    // === ĐIỀN CHAT ID TELEGRAM CỦA BẠN VÀO GIỮA 2 DẤU NHÁY ĐƠN DƯỚI ĐÂY ===
+    const TELEGRAM_CHAT_ID = '8471229803';
+
     // 1. TẢI VÀ HIỂN THỊ DỮ LIỆU BAN ĐẦU
     function loadData() {
       const user = localStorage.getItem('username') || 'blackx';
@@ -196,7 +203,38 @@
       renderHistory();
     }
 
-    // 2. CHỌN MỐC TIỀN NHANH
+    // 2. CHUYỂN ĐỔI PHƯƠNG THỨC RÚT TIỀN
+    function toggleMethod(type) {
+      const bankNameInput = document.getElementById('bankName');
+      const bankLabel = document.getElementById('bankLabel');
+      const accountLabel = document.getElementById('accountLabel');
+      const accountNumberInput = document.getElementById('accountNumber');
+
+      if (type === 'momo') {
+        bankLabel.innerText = 'Ví điện tử';
+        bankNameInput.value = 'Ví MoMo';
+        bankNameInput.disabled = true;
+        accountLabel.innerText = 'Số điện thoại MoMo';
+        accountNumberInput.placeholder = 'Nhập số điện thoại MoMo';
+      } else {
+        bankLabel.innerText = 'Tên Ngân hàng';
+        bankNameInput.value = '';
+        bankNameInput.disabled = false;
+        bankNameInput.placeholder = 'VD: MBBank, Vietcombank...';
+        accountLabel.innerText = 'Số tài khoản';
+        accountNumberInput.placeholder = 'Nhập số tài khoản';
+      }
+    }
+
+    // 3. TỰ ĐỘNG CHUYỂN THÀNH CHỮ HOA KHÔNG DẤU
+    function sanitizeAccountHolder(input) {
+      let str = input.value.toUpperCase();
+      str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      str = str.replace(/Đ/g, 'D');
+      input.value = str;
+    }
+
+    // 4. CHỌN MỐC TIỀN NHANH
     function setQuickAmount(val) {
       const balance = parseFloat(localStorage.getItem('balance') || '0');
       const input = document.getElementById('withdrawAmount');
@@ -207,57 +245,86 @@
       }
     }
 
-    // 3. XỬ LÝ LỆNH RÚT TIỀN KHI SUBMIT
-    function handleWithdraw(e) {
+    // 5. XỬ LÝ LỆNH RÚT TIỀN VÀ GỬI VỀ TELEGRAM BOT
+    async function handleWithdraw(e) {
       e.preventDefault();
 
-      const alertBox = document.getElementById('alertBox');
+      if (TELEGRAM_CHAT_ID === 'ĐIỀN_CHAT_ID_TẠI_ĐÂY' || !TELEGRAM_CHAT_ID) {
+        showAlert('Bạn chưa điền TELEGRAM_CHAT_ID vào mã nguồn!', 'error');
+        return;
+      }
+
+      const user = localStorage.getItem('username') || 'blackx';
       const currentBalance = parseFloat(localStorage.getItem('balance') || '0');
       const withdrawAmount = parseFloat(document.getElementById('withdrawAmount').value);
       const bankName = document.getElementById('bankName').value.trim();
       const accountNumber = document.getElementById('accountNumber').value.trim();
       const accountHolder = document.getElementById('accountHolder').value.trim();
+      const submitBtn = document.getElementById('submitBtn');
 
-      // KIỂM TRA SỐ DƯ
-      if (withdrawAmount > currentBalance) {
-        showAlert('Số dư CRD của bạn không đủ để thực hiện giao dịch này!', 'error');
-        return;
-      }
-
-      // KIỂM TRA MỨC RÚT TỐI THIỂU
       if (withdrawAmount < MIN_WITHDRAW) {
         showAlert(`Số tiền rút tối thiểu là ${MIN_WITHDRAW.toLocaleString('vi-VN')} CRD!`, 'error');
         return;
       }
 
-      // THỰC HIỆN TRỪ TIỀN
-      const newBalance = currentBalance - withdrawAmount;
-      localStorage.setItem('balance', newBalance.toString());
+      if (withdrawAmount > currentBalance) {
+        showAlert('Số dư CRD của bạn không đủ để thực hiện giao dịch này!', 'error');
+        return;
+      }
 
-      // LƯU LỊCH SỬ RÚT TIỀN THỰC TẾ
-      const history = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
-      const newTransaction = {
-        id: 'TX' + Math.floor(100000 + Math.random() * 900000),
-        amount: withdrawAmount,
-        bank: bankName,
-        account: accountNumber,
-        holder: accountHolder,
-        date: new Date().toLocaleString('vi-VN'),
-        status: 'Đang xử lý'
-      };
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> ĐANG XỬ LÝ...`;
 
-      history.unshift(newTransaction); // Đẩy vào đầu danh sách
-      localStorage.setItem('withdrawHistory', JSON.stringify(history));
+      // NỘI DUNG TIN NHẮN TỚI TELEGRAM
+      const messageText = `🔔 **LỆNH RÚT TIỀN MỚI**\n\n👤 **Tài khoản:** ${user}\n💰 **Số tiền:** ${withdrawAmount.toLocaleString('vi-VN')} CRD\n🏦 **Ngân hàng/Ví:** ${bankName}\n💳 **STK/SĐT:** ${accountNumber}\n🏷 **Chủ tài khoản:** ${accountHolder}\n⏰ **Thời gian:** ${new Date().toLocaleString('vi-VN')}`;
 
-      // HIỂN THỊ THÔNG BÁO THÀNH CÔNG & RESET FORM
-      showAlert(`Lệnh rút ${withdrawAmount.toLocaleString('vi-VN')} CRD đã gửi thành công và đang chờ xử lý!`, 'success');
-      document.getElementById('withdrawForm').reset();
+      try {
+        const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: messageText,
+            parse_mode: 'Markdown'
+          })
+        });
 
-      // CẬP NHẬT LẠI GIAO DIỆN
-      loadData();
+        const result = await response.json();
+
+        if (result.ok) {
+          // Trừ số dư local và lưu lịch sử
+          const newBalance = currentBalance - withdrawAmount;
+          localStorage.setItem('balance', newBalance.toString());
+
+          const history = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
+          history.unshift({
+            id: 'TX' + Math.floor(100000 + Math.random() * 900000),
+            amount: withdrawAmount,
+            bank: bankName,
+            account: accountNumber,
+            holder: accountHolder,
+            date: new Date().toLocaleString('vi-VN'),
+            status: 'Đang xử lý'
+          });
+          localStorage.setItem('withdrawHistory', JSON.stringify(history));
+
+          showAlert(`Lệnh rút ${withdrawAmount.toLocaleString('vi-VN')} CRD đã gửi thành công!`, 'success');
+          document.getElementById('withdrawForm').reset();
+          toggleMethod('bank');
+          loadData();
+        } else {
+          showAlert('Lỗi kết nối Telegram! Kiểm tra lại Chat ID.', 'error');
+        }
+      } catch (error) {
+        console.error('API Error:', error);
+        showAlert('Không thể kết nối đến máy chủ Telegram!', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i class="fa-solid fa-circle-check"></i> XÁC NHẬN RÚT TIỀN`;
+      }
     }
 
-    // 4. HIỂN THỊ THÔNG BÁO TỐI ƯU
+    // 6. HIỂN THỊ THÔNG BÁO
     function showAlert(msg, type) {
       const box = document.getElementById('alertBox');
       box.classList.remove('hidden', 'bg-rose-500/10', 'text-rose-400', 'border-rose-500/30', 'bg-emerald-500/10', 'text-emerald-400', 'border-emerald-500/30');
@@ -271,7 +338,7 @@
       }
     }
 
-    // 5. HIỂN THỊ DỮ LIỆU LỊCH SỬ THỰC TẾ FROM LOCALSTORAGE
+    // 7. HIỂN THỊ DỮ LIỆU LỊCH SỬ
     function renderHistory() {
       const historyList = document.getElementById('historyList');
       const history = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
@@ -308,8 +375,7 @@
       window.location.href = 'index.html';
     }
 
-    // Chạy khi nạp trang
-    loadData();
+    document.addEventListener('DOMContentLoaded', loadData);
   </script>
 </body>
 </html>
