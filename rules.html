@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskNova - Quy Định & Điều Khoản</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { background-color: #050614; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
+    .glass-panel { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.15); backdrop-filter: blur(12px); }
+    .nav-btn.active { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-right: 3px solid #38bdf8; }
+    .tab-btn.active { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.5); }
+    .font-scifi { font-family: 'Courier New', Courier, monospace; letter-spacing: -0.5px;}
+  </style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row">
+
+  <!-- SIDEBAR -->
+  <aside class="w-full md:w-64 glass-panel p-5 flex flex-col justify-between shrink-0 border-r border-slate-800 relative z-20">
+    <div class="space-y-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-500 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-cyan-500/20">
+          🚀
+        </div>
+        <div>
+          <h1 class="font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 text-lg">TASKNOVA</h1>
+          <p class="text-[10px] text-slate-400">Portal Quản Lý</p>
+        </div>
+      </div>
+
+      <!-- MENU NAVIGATION -->
+      <nav class="space-y-1">
+        <a href="dashboard.html" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-chart-pie text-sm"></i> Tổng quan
+        </a>
+        <a href="tasks.html" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-list-check text-sm"></i> Nhiệm vụ
+        </a>
+        <a href="withdraw.html" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-wallet text-sm"></i> Rút tiền
+        </a>
+        <a href="rules.html" class="nav-btn active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-file-shield text-sm"></i> Quy định
+        </a>
+        <a href="settings.html" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-gear text-sm"></i> Cài đặt
+        </a>
+      </nav>
+    </div>
+
+    <!-- USER & LOGOUT -->
+    <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xs text-cyan-400" id="userAvatar">U</div>
+        <div class="truncate max-w-[100px]">
+          <p class="text-xs font-bold text-slate-200 truncate" id="displayName">User</p>
+          <p class="text-[10px] text-slate-500 truncate" id="displayEmail">user@gmail.com</p>
+        </div>
+      </div>
+      <button onclick="logout()" class="text-slate-400 hover:text-rose-400 text-xs p-2 transition">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="flex-1 p-4 md:p-8 space-y-6 overflow-y-auto">
+
+    <!-- HEADER NAVIGATION TABS -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <button onclick="switchTab('account')" id="btn-account" class="tab-btn active glass-panel p-3.5 rounded-xl flex items-center justify-center gap-2 text-xs font-bold border transition">
+        <i class="fa-solid fa-user-gear text-cyan-400"></i> Tài khoản <span class="bg-cyan-500/20 text-cyan-400 text-[10px] px-2 py-0.5 rounded-full border border-cyan-500/30">8 điều</span>
+      </button>
+      <button onclick="switchTab('tasks')" id="btn-tasks" class="tab-btn glass-panel p-3.5 rounded-xl flex items-center justify-center gap-2 text-xs font-bold border border-slate-800 text-slate-400 transition">
+        <i class="fa-solid fa-list-check text-amber-400"></i> Nhiệm vụ <span class="bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded-full border border-slate-700">10 điều</span>
+      </button>
+      <button onclick="switchTab('withdraw')" id="btn-withdraw" class="tab-btn glass-panel p-3.5 rounded-xl flex items-center justify-center gap-2 text-xs font-bold border border-slate-800 text-slate-400 transition">
+        <i class="fa-solid fa-wallet text-emerald-400"></i> Rút tiền <span class="bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded-full border border-slate-700">8 điều</span>
+      </button>
+      <button onclick="switchTab('other')" id="btn-other" class="tab-btn glass-panel p-3.5 rounded-xl flex items-center justify-center gap-2 text-xs font-bold border border-slate-800 text-slate-400 transition">
+        <i class="fa-solid fa-shield-halved text-purple-400"></i> Quy định khác <span class="bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded-full border border-slate-700">5 điều</span>
+      </button>
+    </div>
+
+    <!-- TAB 1: TÀI KHOẢN -->
+    <div id="tab-account" class="glass-panel p-6 rounded-2xl bg-slate-900/60 space-y-6">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-lg">
+            <i class="fa-solid fa-user-shield"></i>
+          </div>
+          <div>
+            <h2 class="font-bold text-slate-100 text-lg">Tài khoản</h2>
+            <p class="text-xs text-slate-400">Quản lý tài khoản & xác thực hệ thống</p>
+          </div>
+        </div>
+        <span class="text-xs bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 px-3 py-1 rounded-full font-scifi">8 điều</span>
+      </div>
+
+      <div class="space-y-3 font-scifi text-xs">
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start gap-3">
+          <span class="text-cyan-400 font-bold">01</span>
+          <p class="text-slate-300">Mỗi thành viên chỉ được sở hữu duy nhất 1 tài khoản.</p>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <span class="text-cyan-400 font-bold">02</span>
+            <p class="text-slate-300">Không chấp nhận tài khoản có cùng IP hoặc cùng thiết bị.</p>
+          </div>
+          <span class="px-2 py-0.5 bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 rounded text-[10px] shrink-0 font-sans font-bold">QUAN TRỌNG</span>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start gap-3">
+          <span class="text-cyan-400 font-bold">03</span>
+          <p class="text-slate-300">Trùng IP xảy ra khi nhiều tài khoản cùng mạng Wifi hoặc 4G.</p>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <span class="text-cyan-400 font-bold">04</span>
+            <p class="text-slate-300">Bật tắt 4G hoặc dùng VPN cũng gây trùng IP.</p>
+          </div>
+          <span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 border border-amber-500/40 rounded text-[10px] shrink-0 font-sans font-bold">CẢNH BÁO</span>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start gap-3">
+          <span class="text-cyan-400 font-bold">05</span>
+          <p class="text-slate-300">Trùng thiết bị: 2+ tài khoản đăng nhập cùng thiết bị.</p>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <span class="text-cyan-400 font-bold">06</span>
+            <p class="text-slate-300">Nghiêm cấm tạo tài khoản ảo, giả mạo thông tin.</p>
+          </div>
+          <span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/40 rounded text-[10px] shrink-0 font-sans font-bold">CẤM</span>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <span class="text-cyan-400 font-bold">07</span>
+            <p class="text-slate-300">Gian lận sẽ bị khóa vĩnh viễn không cần thông báo.</p>
+          </div>
+          <span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/40 rounded text-[10px] shrink-0 font-sans font-bold">CẤM</span>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start gap-3">
+          <span class="text-cyan-400 font-bold">08</span>
+          <p class="text-slate-300">Tài khoản vi phạm không được xử lý lệnh rút tiền.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: NHIỆM VỤ -->
+    <div id="tab-tasks" class="glass-panel p-6 rounded-2xl bg-slate-900/60 space-y-6 hidden">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-lg">
+            <i class="fa-solid fa-list-check"></i>
+          </div>
+          <div>
+            <h2 class="font-bold text-slate-100 text-lg">Nhiệm vụ</h2>
+            <p class="text-xs text-slate-400">Thực hiện nhiệm vụ & nhận thưởng đúng quy trình</p>
+          </div>
+        </div>
+        <span class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/30 px-3 py-1 rounded-full font-scifi">10 điều</span>
+      </div>
+
+      <div class="space-y-3 font-scifi text-xs">
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <span class="text-amber-400 font-bold">01</span>
+            <p class="text-slate-300">Tuyệt đối KHÔNG dùng Proxy, VPN, V2Ray.</p>
+          </div>
+          <span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/40 rounded text-[10px] shrink-0 font-sans font-bold">CẤM</span>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <span class="text-amber-400 font-bold">02</span>
+            <p class="text-slate-300">KHÔNG bật tắt 4G hoặc chuyển Wifi khi làm nhiệm vụ.</p>
+          </div>
+          <span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/40 rounded text-[10px] shrink-0 font-sans font-bold">CẤM</span>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <span class="text-amber-400 font-bold">03</span>
+            <p class="text-slate-300">KHÔNG dùng chế độ ẩn danh trình duyệt.</p>
+          </div>
+          <span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/40 rounded text-[10px] shrink-0 font-sans font-bold">CẤM</span>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start gap-3">
+          <span class="text-amber-400 font-bold">04</span>
+          <p class="text-slate-300">Bật Cookie và Javascript để nhiệm vụ hoạt động chuẩn xác.</p>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start gap-3">
+          <span class="text-amber-400 font-bold">05</span>
+          <p class="text-slate-300">Tắt AdBlock và các tiện ích chặn quảng cáo trước khi bắt đầu.</p>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start gap-3">
+          <span class="text-amber-400 font-bold">06</span>
+          <p class="text-slate-300">Nhiệm vụ được làm mới sau 00:00 mỗi ngày.</p>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start gap-3">
+          <span class="text-amber-400 font-bold">07</span>
+          <p class="text-slate-300">Thưởng tích lũy trực tiếp vào ví sau khi hoàn thành.</p>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start gap-3">
+          <span class="text-amber-400 font-bold">08</span>
+          <p class="text-slate-300">Lượt làm chỉ bị trừ khi hoàn tất thành công.</p>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start gap-3">
+          <span class="text-amber-400 font-bold">09</span>
+          <p class="text-slate-300">Một số nhiệm vụ cần Admin duyệt trước khi cộng tiền.</p>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start gap-3">
+          <span class="text-amber-400 font-bold">10</span>
+          <p class="text-slate-300">TaskNova là trung gian kết nối các nền tảng đối tác.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: RÚT TIỀN -->
+    <div id="tab-withdraw" class="glass-panel p-6 rounded-2xl bg-slate-900/60 space-y-6 hidden">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-lg">
+            <i class="fa-solid fa-money-bill-transfer"></i>
+          </div>
+          <div>
+            <h2 class="font-bold text-slate-100 text-lg">Rút tiền</h2>
+            <p class="text-xs text-slate-400">Quy trình rút tiền & thanh toán thưởng</p>
+          </div>
+        </div>
+        <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full font-scifi">8 điều</span>
+      </div>
+
+      <div class="space-y-3 font-scifi text-xs">
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start gap-3">
+          <span class="text-emerald-400 font-bold">01</span>
+          <p class="text-slate-300">Rút tối thiểu 10.000 VNĐ, không giới hạn tối đa.</p>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <span class="text-emerald-400 font-bold">02</span>
+            <p class="text-slate-300">Mỗi thiết bị chỉ liên kết 1 tài khoản duy nhất.</p>
+          </div>
+          <span class="px-2 py-0.5 bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 rounded text-[10px] shrink-0 font-sans font-bold">QUAN TRỌNG</span>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start gap-3">
+          <span class="text-emerald-400 font-bold">03</span>
+          <p class="text-slate-300">Chốt lệnh rút lúc 11h sáng mỗi ngày.</p>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <span class="text-emerald-400 font-bold">04</span>
+            <p class="text-slate-300">Đơn quá 7 ngày không được hỗ trợ xử lý khiếu nại.</p>
+          </div>
+          <span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 border border-amber-500/40 rounded text-[10px] shrink-0 font-sans font-bold">CẢNH BÁO</span>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <span class="text-emerald-400 font-bold">05</span>
+            <p class="text-slate-300">Đơn tạm giữ quá 30 ngày sẽ tự động hủy.</p>
+          </div>
+          <span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 border border-amber-500/40 rounded text-[10px] shrink-0 font-sans font-bold">CẢNH BÁO</span>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start gap-3">
+          <span class="text-emerald-400 font-bold">06</span>
+          <p class="text-slate-300">Khuyến khích rút ngay khi đạt mức tối thiểu.</p>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <span class="text-emerald-400 font-bold">07</span>
+            <p class="text-slate-300">Tài khoản giả mạo hoặc thông tin sai lệch bị từ chối lệnh rút.</p>
+          </div>
+          <span class="px-2 py-0.5 bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 rounded text-[10px] shrink-0 font-sans font-bold">QUAN TRỌNG</span>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start gap-3">
+          <span class="text-emerald-400 font-bold">08</span>
+          <p class="text-slate-300">Điền chính xác thông tin ngân hàng / ví điện tử nhận tiền.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: QUY ĐỊNH KHÁC -->
+    <div id="tab-other" class="glass-panel p-6 rounded-2xl bg-slate-900/60 space-y-6 hidden">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 text-lg">
+            <i class="fa-solid fa-users-gear"></i>
+          </div>
+          <div>
+            <h2 class="font-bold text-slate-100 text-lg">Quy định khác</h2>
+            <p class="text-xs text-slate-400">Cộng đồng & xử lý vi phạm</p>
+          </div>
+        </div>
+        <span class="text-xs bg-purple-500/10 text-purple-400 border border-purple-500/30 px-3 py-1 rounded-full font-scifi">5 điều</span>
+      </div>
+
+      <div class="space-y-3 font-scifi text-xs">
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start gap-3">
+          <span class="text-purple-400 font-bold">01</span>
+          <p class="text-slate-300">Tham gia cộng đồng TaskNova để nhận hỗ trợ nhanh nhất.</p>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <span class="text-purple-400 font-bold">02</span>
+            <p class="text-slate-300">Nghiêm cấm kích động, xuyên tạc hoặc gây chia rẽ cộng đồng.</p>
+          </div>
+          <span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/40 rounded text-[10px] shrink-0 font-sans font-bold">CẤM</span>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <span class="text-purple-400 font-bold">03</span>
+            <p class="text-slate-300">Quảng bá nội dung xấu, lừa đảo bị xử lý nghiêm.</p>
+          </div>
+          <span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/40 rounded text-[10px] shrink-0 font-sans font-bold">CẤM</span>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start gap-3">
+          <span class="text-purple-400 font-bold">04</span>
+          <p class="text-slate-300">Thắc mắc vui lòng liên hệ trực tiếp Admin qua kênh CSKH chính thức.</p>
+        </div>
+        <div class="p-3.5 bg-slate-950/60 border border-slate-800/80 rounded-xl flex items-start justify-between gap-3">
+          <div class="flex items-start gap-3">
+            <span class="text-purple-400 font-bold">05</span>
+            <p class="text-slate-300">Vi phạm bị loại khỏi cộng đồng và khóa tài khoản vĩnh viễn.</p>
+          </div>
+          <span class="px-2 py-0.5 bg-rose-500/20 text-rose-400 border border-rose-500/40 rounded text-[10px] shrink-0 font-sans font-bold">CẤM</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const user = localStorage.getItem('username');
+    const email = localStorage.getItem('userEmail');
+
+    if (!user) {
+      window.location.href = 'index.html';
+    } else {
+      document.getElementById('displayName').innerText = user;
+      document.getElementById('displayEmail').innerText = email || '';
+      document.getElementById('userAvatar').innerText = user.charAt(0).toUpperCase();
+    }
+
+    function logout() {
+      localStorage.removeItem('username');
+      localStorage.removeItem('userEmail');
+      window.location.href = 'index.html';
+    }
+
+    function switchTab(tabName) {
+      const tabs = ['account', 'tasks', 'withdraw', 'other'];
+      
+      tabs.forEach(tab => {
+        const element = document.getElementById('tab-' + tab);
+        const btn = document.getElementById('btn-' + tab);
+        
+        if (tab === tabName) {
+          element.classList.remove('hidden');
+          btn.classList.add('active');
+          btn.classList.remove('text-slate-400', 'border-slate-800');
+        } else {
+          element.classList.add('hidden');
+          btn.classList.remove('active');
+          btn.classList.add('text-slate-400', 'border-slate-800');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
