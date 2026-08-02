@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskNova - Rút Tiền</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { background-color: #050614; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
+    .glass-panel { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.15); backdrop-filter: blur(12px); }
+    .nav-btn.active { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-right: 3px solid #38bdf8; }
+    .tab-method.active { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.5); }
+    .preset-btn:hover, .preset-btn.active { background: rgba(56, 189, 248, 0.2); border-color: #38bdf8; color: #38bdf8; }
+    .font-scifi { font-family: 'Courier New', Courier, monospace; letter-spacing: -0.5px;}
+  </style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row">
+
+  <!-- SIDEBAR -->
+  <aside class="w-full md:w-64 glass-panel p-5 flex flex-col justify-between shrink-0 border-r border-slate-800 relative z-20">
+    <div class="space-y-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-500 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-cyan-500/20">
+          🚀
+        </div>
+        <div>
+          <h1 class="font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 text-lg">TASKNOVA</h1>
+          <p class="text-[10px] text-slate-400">Portal Quản Lý</p>
+        </div>
+      </div>
+
+      <!-- MENU NAVIGATION -->
+      <nav class="space-y-1">
+        <a href="dashboard.html" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-chart-pie text-sm"></i> Tổng quan
+        </a>
+        <a href="tasks.html" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-list-check text-sm"></i> Nhiệm vụ
+        </a>
+        <a href="withdraw.html" class="nav-btn active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-wallet text-sm"></i> Rút tiền
+        </a>
+        <a href="rules.html" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-file-shield text-sm"></i> Quy định
+        </a>
+        <a href="settings.html" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-gear text-sm"></i> Cài đặt
+        </a>
+      </nav>
+    </div>
+
+    <!-- USER & LOGOUT -->
+    <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xs text-cyan-400" id="userAvatar">U</div>
+        <div class="truncate max-w-[100px]">
+          <p class="text-xs font-bold text-slate-200 truncate" id="displayName">User</p>
+          <p class="text-[10px] text-slate-500 truncate" id="displayEmail">user@gmail.com</p>
+        </div>
+      </div>
+      <button onclick="logout()" class="text-slate-400 hover:text-rose-400 text-xs p-2 transition">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="flex-1 p-4 md:p-8 space-y-6 overflow-y-auto">
+
+    <!-- TAB LỰA CHỌN PHƯƠNG THỨC RÚT TIỀN (BỎ USDT) -->
+    <div class="grid grid-cols-2 gap-4">
+      <button onclick="switchMethod('bank')" id="tab-bank" class="tab-method active glass-panel p-4 rounded-xl flex items-center justify-center gap-3 font-bold text-sm border transition">
+        <i class="fa-solid fa-building-columns text-cyan-400"></i> Bank / Ví Điện Tử
+      </button>
+      <button onclick="switchMethod('card')" id="tab-card" class="tab-method glass-panel p-4 rounded-xl flex items-center justify-center gap-3 font-bold text-sm border border-slate-800 text-slate-400 transition">
+        <i class="fa-solid fa-ticket text-emerald-400"></i> Thẻ Cào Điện Thoại
+      </button>
+    </div>
+
+    <!-- KHUNG RÚT BANK / VÍ ĐIỆN TỬ -->
+    <div id="method-bank" class="glass-panel p-6 rounded-2xl bg-slate-900/60 space-y-5">
+      <div class="flex items-center gap-3 border-b border-slate-800 pb-4">
+        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-lg">
+          <i class="fa-solid fa-building-columns"></i>
+        </div>
+        <div>
+          <h2 class="font-bold text-slate-100 text-lg">Rút Bank / Ví điện tử</h2>
+          <p class="text-xs text-slate-400">Chọn ngân hàng và nhập thông tin tài khoản nhận tiền</p>
+        </div>
+      </div>
+
+      <form onsubmit="handleWithdraw(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-2">Ngân hàng / Ví điện tử</label>
+          <select required class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-500 transition">
+            <option value="">-- Chọn ngân hàng --</option>
+            <option value="MB">MBBank - Ngân Hàng Quân Đội</option>
+            <option value="NCB">NCB - Ngân Hàng Quốc Dân</option>
+            <option value="VCB">Vietcombank</option>
+            <option value="TCB">Techcombank</option>
+            <option value="MOMO">Ví MoMo</option>
+            <option value="ZALOPAY">Ví ZaloPay</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-2">Họ tên người nhận</label>
+          <input type="text" required placeholder="Nhập họ tên trùng tài khoản..." class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 transition">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-2">Số tài khoản / SĐT Ví</label>
+          <input type="text" required placeholder="Nhập số tài khoản nhận tiền..." class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 transition">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-2">Số tiền rút</label>
+          <input type="number" id="bankAmount" min="10000" step="10000" required placeholder="Tối thiểu 10.000" oninput="updateConvert('bank')" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 transition font-scifi">
+        </div>
+
+        <!-- CÁC MỐC RÚT NHANH (THÊM 20K) -->
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 pt-1">
+          <button type="button" onclick="setPreset('bank', 10000)" class="preset-btn py-2 border border-slate-800 bg-slate-950/50 rounded-lg text-xs font-scifi font-bold text-slate-300 transition">10.000đ</button>
+          <button type="button" onclick="setPreset('bank', 20000)" class="preset-btn py-2 border border-slate-800 bg-slate-950/50 rounded-lg text-xs font-scifi font-bold text-slate-300 transition">20.000đ</button>
+          <button type="button" onclick="setPreset('bank', 50000)" class="preset-btn py-2 border border-slate-800 bg-slate-950/50 rounded-lg text-xs font-scifi font-bold text-slate-300 transition">50.000đ</button>
+          <button type="button" onclick="setPreset('bank', 100000)" class="preset-btn py-2 border border-slate-800 bg-slate-950/50 rounded-lg text-xs font-scifi font-bold text-slate-300 transition">100.000đ</button>
+          <button type="button" onclick="setPreset('bank', 200000)" class="preset-btn py-2 border border-slate-800 bg-slate-950/50 rounded-lg text-xs font-scifi font-bold text-slate-300 transition">200.000đ</button>
+          <button type="button" onclick="setPreset('bank', 500000)" class="preset-btn py-2 border border-slate-800 bg-slate-950/50 rounded-lg text-xs font-scifi font-bold text-slate-300 transition">500.000đ</button>
+        </div>
+
+        <p class="text-xs text-slate-400 font-scifi">Quy đổi: <span id="bankConvert" class="text-cyan-400 font-bold">0đ</span></p>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-2">Ghi chú</label>
+          <textarea rows="2" placeholder="Ghi chú cho admin nếu cần..." class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 transition"></textarea>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-xl text-sm transition shadow-[0_0_20px_rgba(56,189,248,0.3)] flex items-center justify-center gap-2">
+          <i class="fa-solid fa-paper-plane"></i> Xác nhận rút tiền
+        </button>
+      </form>
+    </div>
+
+    <!-- KHUNG RÚT THẺ CÀO -->
+    <div id="method-card" class="glass-panel p-6 rounded-2xl bg-slate-900/60 space-y-5 hidden">
+      <div class="flex items-center gap-3 border-b border-slate-800 pb-4">
+        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-lg">
+          <i class="fa-solid fa-ticket"></i>
+        </div>
+        <div>
+          <h2 class="font-bold text-slate-100 text-lg">Rút thẻ cào</h2>
+          <p class="text-xs text-slate-400">Nhận mã thẻ cào các mệnh giá phổ biến</p>
+        </div>
+      </div>
+
+      <form onsubmit="handleWithdraw(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-2">Loại thẻ</label>
+          <select required class="w-full bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 transition">
+            <option value="">-- Chọn loại thẻ --</option>
+            <option value="VIETTEL">Viettel</option>
+            <option value="VINAPHONE">Vinaphone</option>
+            <option value="MOBIFONE">Mobifone</option>
+            <option value="ZING">Thẻ Zing</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-2">Chọn mệnh giá</label>
+          <input type="hidden" id="cardAmount" required>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <button type="button" onclick="setCardPreset(10000, this)" class="card-preset-btn py-3 border border-slate-800 bg-slate-950/50 rounded-xl text-xs font-scifi font-bold text-slate-300 hover:border-emerald-500 transition">10.000đ</button>
+            <button type="button" onclick="setCardPreset(20000, this)" class="card-preset-btn py-3 border border-slate-800 bg-slate-950/50 rounded-lg text-xs font-scifi font-bold text-slate-300 hover:border-emerald-500 transition">20.000đ</button>
+            <button type="button" onclick="setCardPreset(50000, this)" class="card-preset-btn py-3 border border-slate-800 bg-slate-950/50 rounded-xl text-xs font-scifi font-bold text-slate-300 hover:border-emerald-500 transition">50.000đ</button>
+            <button type="button" onclick="setCardPreset(100000, this)" class="card-preset-btn py-3 border border-slate-800 bg-slate-950/50 rounded-xl text-xs font-scifi font-bold text-slate-300 hover:border-emerald-500 transition">100.000đ</button>
+            <button type="button" onclick="setCardPreset(200000, this)" class="card-preset-btn py-3 border border-slate-800 bg-slate-950/50 rounded-xl text-xs font-scifi font-bold text-slate-300 hover:border-emerald-500 transition">200.000đ</button>
+            <button type="button" onclick="setCardPreset(500000, this)" class="card-preset-btn py-3 border border-slate-800 bg-slate-950/50 rounded-xl text-xs font-scifi font-bold text-slate-300 hover:border-emerald-500 transition">500.000đ</button>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-400 font-scifi">Quy đổi: <span id="cardConvert" class="text-emerald-400 font-bold">0đ</span></p>
+
+        <button type="submit" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-sm transition shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2">
+          <i class="fa-solid fa-paper-plane"></i> Xác nhận rút thẻ cào
+        </button>
+      </form>
+    </div>
+
+    <!-- LỊCH SỬ RÚT TIỀN (CHUẨN GIAO DIỆN CỦA MẪU) -->
+    <div class="glass-panel p-6 rounded-2xl bg-slate-900/60 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-clock-rotate-left text-cyan-400"></i>
+          <h3 class="font-bold text-slate-100 text-base font-scifi">LỊCH SỬ RÚT TIỀN</h3>
+        </div>
+        <span class="text-xs bg-slate-800 text-slate-300 px-3 py-1 rounded-full border border-slate-700 font-scifi">2 lệnh</span>
+      </div>
+
+      <!-- FILTER STATUS -->
+      <div class="flex gap-2">
+        <button class="px-3 py-1.5 bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 rounded-lg text-xs font-bold">
+          <i class="fa-solid fa-list mr-1"></i> Tất cả (2)
+        </button>
+        <button class="px-3 py-1.5 bg-slate-800/60 text-slate-400 hover:text-white rounded-lg text-xs">
+          <i class="fa-solid fa-hourglass-half mr-1"></i> Đang chờ (0)
+        </button>
+        <button class="px-3 py-1.5 bg-slate-800/60 text-slate-400 hover:text-white rounded-lg text-xs">
+          <i class="fa-solid fa-check-double mr-1"></i> Đã xử lý (2)
+        </button>
+      </div>
+
+      <!-- STATUS BADGE NOTES -->
+      <div class="p-3 bg-slate-950/50 rounded-xl space-y-1 text-[11px] text-slate-400 border border-slate-800/50">
+        <p class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-400"></span> Đang chờ duyệt</p>
+        <p class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-sky-400"></span> Đã duyệt — đang chuyển tiền</p>
+        <p class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Đã thanh toán — tiền về tài khoản</p>
+      </div>
+
+      <!-- LIST ITEMS -->
+      <div class="space-y-3 pt-2">
+        <!-- ITEM 1 -->
+        <div class="p-4 bg-slate-950/60 border border-slate-800 rounded-xl flex items-center justify-between hover:border-slate-700 transition">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-200 uppercase font-scifi">BANK - MBBANK</p>
+              <p class="text-[10px] text-slate-500">Mã GD: #RL024</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-xs font-bold text-slate-100 font-scifi">10.000 Xu</p>
+            <span class="inline-block px-2.5 py-0.5 mt-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-full text-[10px] font-bold">
+              ● Đã thanh toán
+            </span>
+          </div>
+        </div>
+
+        <!-- ITEM 2 -->
+        <div class="p-4 bg-slate-950/60 border border-slate-800 rounded-xl flex items-center justify-between hover:border-slate-700 transition">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-200 uppercase font-scifi">BANK - MOMO</p>
+              <p class="text-[10px] text-slate-500">Mã GD: #RL747</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-xs font-bold text-slate-100 font-scifi">20.000 Xu</p>
+            <span class="inline-block px-2.5 py-0.5 mt-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-full text-[10px] font-bold">
+              ● Đã thanh toán
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const user = localStorage.getItem('username');
+    const email = localStorage.getItem('userEmail');
+
+    if (!user) {
+      window.location.href = 'index.html';
+    } else {
+      document.getElementById('displayName').innerText = user;
+      document.getElementById('displayEmail').innerText = email || '';
+      document.getElementById('userAvatar').innerText = user.charAt(0).toUpperCase();
+    }
+
+    function logout() {
+      localStorage.removeItem('username');
+      localStorage.removeItem('userEmail');
+      window.location.href = 'index.html';
+    }
+
+    function switchMethod(method) {
+      if (method === 'bank') {
+        document.getElementById('method-bank').classList.remove('hidden');
+        document.getElementById('method-card').classList.add('hidden');
+        document.getElementById('tab-bank').classList.add('active', 'text-cyan-400');
+        document.getElementById('tab-card').classList.remove('active', 'text-cyan-400');
+        document.getElementById('tab-card').classList.add('text-slate-400');
+      } else {
+        document.getElementById('method-card').classList.remove('hidden');
+        document.getElementById('method-bank').classList.add('hidden');
+        document.getElementById('tab-card').classList.add('active', 'text-emerald-400');
+        document.getElementById('tab-bank').classList.remove('active', 'text-cyan-400');
+        document.getElementById('tab-bank').classList.add('text-slate-400');
+      }
+    }
+
+    function setPreset(type, amount) {
+      if (type === 'bank') {
+        document.getElementById('bankAmount').value = amount;
+        updateConvert('bank');
+      }
+    }
+
+    function setCardPreset(amount, btn) {
+      document.getElementById('cardAmount').value = amount;
+      document.getElementById('cardConvert').innerText = amount.toLocaleString('vi-VN') + 'đ';
+      
+      document.querySelectorAll('.card-preset-btn').forEach(b => {
+        b.classList.remove('border-emerald-500', 'bg-emerald-500/20', 'text-emerald-400');
+      });
+      btn.classList.add('border-emerald-500', 'bg-emerald-500/20', 'text-emerald-400');
+    }
+
+    function updateConvert(type) {
+      if (type === 'bank') {
+        const val = parseInt(document.getElementById('bankAmount').value || 0);
+        document.getElementById('bankConvert').innerText = val.toLocaleString('vi-VN') + 'đ';
+      }
+    }
+
+    function handleWithdraw(e) {
+      e.preventDefault();
+      alert('🚀 Yêu cầu rút tiền của bạn đã gửi thành công! Admin sẽ duyệt trong vòng 24h.');
+    }
+  </script>
+</body>
+</html>
