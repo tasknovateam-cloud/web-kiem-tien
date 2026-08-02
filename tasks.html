@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskNova - Nhiệm Vụ Vượt Link</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { background-color: #050614; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
+    .glass-panel { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.15); backdrop-filter: blur(12px); }
+    .nav-btn.active { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-right: 3px solid #38bdf8; }
+    .font-scifi { font-family: 'Courier New', Courier, monospace; letter-spacing: -0.5px;}
+
+    /* Style Thẻ Card Giống Ảnh */
+    .task-card {
+      background: #0b0e26;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+    .task-card:hover {
+      border-color: rgba(236, 72, 153, 0.3);
+      transform: translateY(-2px);
+    }
+    .badge-reward {
+      background: linear-gradient(90deg, #e11d48, #f43f5e);
+      color: #fff;
+    }
+    .btn-pink {
+      background: linear-gradient(90deg, #e11d48, #f43f5e);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
+    }
+    .btn-pink:hover {
+      background: linear-gradient(90deg, #be123c, #e11d48);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row">
+
+  <!-- SIDEBAR -->
+  <aside class="w-full md:w-64 glass-panel p-5 flex flex-col justify-between shrink-0 border-r border-slate-800 relative z-20">
+    <div class="space-y-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-500 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-cyan-500/20">🚀</div>
+        <div>
+          <h1 class="font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 text-lg">TASKNOVA</h1>
+          <p class="text-[10px] text-slate-400">Portal Quản Lý</p>
+        </div>
+      </div>
+
+      <!-- NAVIGATION -->
+      <nav class="space-y-1">
+        <a href="dashboard.html" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-chart-pie text-sm"></i> Tổng quan
+        </a>
+        <a href="tasks.html" class="nav-btn active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-list-check text-sm"></i> Nhiệm vụ
+        </a>
+        <a href="withdraw.html" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-wallet text-sm"></i> Rút tiền
+        </a>
+        <a href="rules.html" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-file-shield text-sm"></i> Quy định
+        </a>
+        <a href="settings.html" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-gear text-sm"></i> Cài đặt
+        </a>
+      </nav>
+    </div>
+
+    <!-- USER & LOGOUT -->
+    <div class="pt-4 border-t border-slate-800 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xs text-cyan-400" id="sidebarAvatar">B</div>
+        <div class="truncate max-w-[100px]">
+          <p class="text-xs font-bold text-slate-200 truncate" id="sidebarName">blackx</p>
+          <p class="text-[10px] text-slate-500 truncate" id="sidebarEmail">pryzexxol@gmail.com</p>
+        </div>
+      </div>
+      <button onclick="logout()" class="text-slate-400 hover:text-rose-400 text-xs p-2 transition">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 p-4 md:p-8 space-y-6 overflow-y-auto">
+
+    <!-- HEADER TOP -->
+    <div class="glass-panel p-6 rounded-2xl bg-slate-900/60 flex flex-col md:flex-row md:items-center justify-between gap-4 border border-slate-800">
+      <div>
+        <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-pink-500"></i> Danh Sách Nhiệm Vụ Vượt Link
+        </h2>
+        <p class="text-xs text-slate-400">Chọn nhiệm vụ bên dưới để tiến hành vượt link và nhận thưởng CRD.</p>
+      </div>
+      <div class="bg-slate-950/80 px-5 py-3 rounded-xl border border-amber-500/20 flex items-center gap-3 shrink-0">
+        <i class="fa-solid fa-coins text-amber-400 text-2xl"></i>
+        <div>
+          <p class="text-[10px] uppercase font-bold text-slate-400 font-scifi">SỐ DƯ HIỆN CÓ</p>
+          <p class="text-lg font-bold text-amber-400 font-scifi" id="taskBalanceDisplay">0 CRD</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRID DANH SÁCH NHIỆM VỤ DẠNG CARD CHUẨN MẪU ẨNH -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="taskGrid">
+      <!-- JS sẽ render thẻ theo giao diện mẫu -->
+    </div>
+
+  </main>
+
+  <script>
+    // DANH SÁCH KHỞI TẠO THEO ĐÚNG HÌNH ẢNH MẪU
+    // Bạn có thể dễ dàng thay đổi shortLink khi có link rút gọn chính thức
+    const TASK_DATA = [
+      {
+        id: "TASK_PHIENCHOSO_REVIEW",
+        title: "PHIENCHOSO REVIEW",
+        reward: 671,
+        maxLimit: 1,
+        shortLink: "" // Chưa có link
+      },
+      {
+        id: "TASK_LAYMA",
+        title: "LAYMA",
+        reward: 431,
+        maxLimit: 2,
+        shortLink: "" // Chưa có link
+      },
+      {
+        id: "TASK_UPTOLINK_4STEP",
+        title: "UPTOLINK 4STEP",
+        reward: 335,
+        maxLimit: 500,
+        shortLink: "" // Chưa có link
+      },
+      {
+        id: "TASK_LINKTOT",
+        title: "LINK TOT",
+        reward: 335,
+        maxLimit: 2,
+        shortLink: "https://linktot.net" // Đã cấu hình linktot.net theo yêu cầu
+      },
+      {
+        id: "TASK_PHIENCHOSO_TUKHOA",
+        title: "PHIENCHOSO TU KHOA",
+        reward: 335,
+        maxLimit: 2,
+        shortLink: "" // Chưa có link
+      },
+      {
+        id: "TASK_LINK4M",
+        title: "LINK4M",
+        reward: 335,
+        maxLimit: 2,
+        shortLink: "" // Chưa có link
+      },
+      {
+        id: "TASK_SITE2S",
+        title: "SITE2S",
+        reward: 239,
+        maxLimit: 3,
+        shortLink: "" // Chưa có link
+      }
+    ];
+
+    function initPage() {
+      const user = localStorage.getItem('username') || 'blackx';
+      const email = localStorage.getItem('userEmail') || 'pryzexxol@gmail.com';
+      const balance = parseFloat(localStorage.getItem('balance') || '0');
+
+      document.getElementById('sidebarName').innerText = user;
+      document.getElementById('sidebarEmail').innerText = email;
+      document.getElementById('sidebarAvatar').innerText = user.charAt(0).toUpperCase();
+      document.getElementById('taskBalanceDisplay').innerText = `${balance.toLocaleString('vi-VN')} CRD`;
+
+      renderTaskCards();
+    }
+
+    function renderTaskCards() {
+      const container = document.getElementById('taskGrid');
+      const userProgress = JSON.parse(localStorage.getItem('userProgress') || '{}');
+
+      container.innerHTML = TASK_DATA.map(task => {
+        const currentDone = userProgress[task.id] || 0;
+        const isMaxed = currentDone >= task.maxLimit;
+
+        return `
+          <div class="task-card p-4 flex flex-col justify-between h-52">
+            <!-- HEADER CARD -->
+            <div class="space-y-2">
+              <h3 class="font-black text-sm text-slate-100 tracking-wide truncate">${task.title}</h3>
+              
+              <!-- BADGE REWARD -->
+              <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold badge-reward">
+                <i class="fa-solid fa-coins text-[10px]"></i> ${task.reward} CRD
+              </div>
+            </div>
+
+            <!-- DƯỚI CARD -->
+            <div class="space-y-3">
+              <!-- SỐ LƯỢT -->
+              <div class="bg-slate-900/80 border border-slate-800 rounded-lg px-3 py-1.5 flex items-center gap-2 text-xs text-slate-400 font-semibold">
+                <i class="fa-solid fa-clock text-rose-400 text-[10px]"></i> ${currentDone}/${task.maxLimit} lượt
+              </div>
+
+              <!-- NÚT BẤM LẤY LINK VƯỢT -->
+              ${isMaxed ? `
+                <button disabled class="w-full bg-slate-800 text-slate-500 text-xs font-bold py-2.5 rounded-xl cursor-not-allowed">
+                  Hết lượt hôm nay
+                </button>
+              ` : `
+                <button onclick="handleGetLink('${task.id}', '${task.shortLink}', ${task.reward})" class="w-full btn-pink font-bold text-xs py-2.5 rounded-xl transition">
+                  Lấy link vượt
+                </button>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handleGetLink(taskId, shortLink, reward) {
+      if (!shortLink) {
+        alert("Nhiệm vụ này hiện chưa được mở hoặc chưa gán link!");
+        return;
+      }
+
+      const now = Date.now();
+      const token = `TK_${now}_${Math.floor(Math.random() * 10000)}`;
+
+      // Nếu bạn muốn test việc chuyển hướng qua linktot.net
+      window.location.href = shortLink;
+    }
+
+    function logout() {
+      localStorage.removeItem('username');
+      localStorage.removeItem('userEmail');
+      window.location.href = 'index.html';
+    }
+
+    initPage();
+  </script>
+</body>
+</html>
