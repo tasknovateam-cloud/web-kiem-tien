@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskNova - Hoàn Thành Nhiệm Vụ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { background-color: #050614; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
+    .glass-panel { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(56, 189, 248, 0.15); backdrop-filter: blur(12px); }
+    .font-scifi { font-family: 'Courier New', Courier, monospace; letter-spacing: -0.5px;}
+    .glow-effect { box-shadow: 0 0 25px rgba(56, 189, 248, 0.2); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
+
+  <!-- HEADER COMPONENT -->
+  <header class="max-w-4xl mx-auto w-full flex items-center justify-between pb-6 border-b border-slate-800">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-500 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-cyan-500/20">
+        🚀
+      </div>
+      <div>
+        <h1 class="font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 text-lg">TASKNOVA</h1>
+        <p class="text-[10px] text-slate-400">Hệ Thống Xác Minh Nhiệm Vụ</p>
+      </div>
+    </div>
+    <a href="dashboard.html" class="text-xs font-semibold text-slate-400 hover:text-cyan-400 transition flex items-center gap-1.5">
+      <i class="fa-solid fa-house"></i> Về Dashboard
+    </a>
+  </header>
+
+  <!-- MAIN VERIFICATION AREA -->
+  <main class="max-w-2xl mx-auto w-full my-8 space-y-6">
+
+    <!-- STATUS CARD -->
+    <div id="statusCard" class="glass-panel p-8 rounded-3xl text-center space-y-5 glow-effect border border-slate-800">
+      
+      <!-- ICON XỬ LÝ -->
+      <div id="statusIcon" class="w-20 h-20 mx-auto rounded-full bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-3xl">
+        <i class="fa-solid fa-spinner animate-spin"></i>
+      </div>
+
+      <!-- TIÊU ĐỀ & NỘI DUNG -->
+      <div class="space-y-2">
+        <h2 id="statusTitle" class="text-xl font-bold text-slate-100">Đang kiểm tra kết quả...</h2>
+        <p id="statusDesc" class="text-xs text-slate-400 max-w-md mx-auto">
+          Hệ thống đang đối chiếu dữ liệu giao dịch từ liên kết Link4m và kiểm tra tính hợp lệ của Token.
+        </p>
+      </div>
+
+      <!-- CHI TIẾT CỘNG CRD (ẨN MẶC ĐỊNH) -->
+      <div id="rewardBadge" class="hidden inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 px-4 py-2 rounded-2xl font-scifi font-bold text-sm">
+        <i class="fa-solid fa-coins text-lg"></i> <span id="rewardAmount">+0</span> CRD
+      </div>
+
+      <!-- NÚT ĐIỀU HƯỚNG -->
+      <div id="actionArea" class="pt-2 hidden">
+        <a href="tasks.html" class="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs px-6 py-3 rounded-xl transition shadow-lg shadow-cyan-500/20">
+          <i class="fa-solid fa-list-check"></i> Tiếp tục làm Nhiệm vụ
+        </a>
+      </div>
+    </div>
+
+    <!-- BANNER QUẢNG CÁO TASKNOVA BRAND -->
+    <div class="glass-panel p-6 rounded-2xl bg-gradient-to-r from-slate-900/90 via-indigo-950/40 to-slate-900/90 border border-cyan-500/20 text-center relative overflow-hidden">
+      <div class="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl"></div>
+      <p class="text-[10px] uppercase tracking-widest font-bold text-cyan-400 mb-1 font-scifi">TASKNOVA OFFICIAL ADVERTISEMENT</p>
+      <h3 class="text-sm font-bold text-slate-100 mb-2">Kiếm Tiền Trực Tuyến Uy Tín Cùng TaskNova</h3>
+      <p class="text-xs text-slate-400 max-w-lg mx-auto mb-4">
+        Tham gia hệ thống rút gọn link nâng cao, hoàn thành nhiệm vụ đơn giản hàng ngày và rút tiền về Ngân Hàng / MoMo cực kỳ nhanh chóng.
+      </p>
+      <a href="https://web-kiem-tien-alom.onrender.com" target="_blank" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 font-semibold text-xs px-4 py-2 rounded-xl transition">
+        <i class="fa-solid fa-globe"></i> Ghé thăm: web-kiem-tien-alom.onrender.com
+      </a>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="text-center text-[11px] text-slate-500 py-4 border-t border-slate-800/60">
+    <p>© 2026 TaskNova Security System. Tất cả các hành vi F5 hoặc gian lận Token sẽ bị hệ thống tự động hủy bỏ giao dịch.</p>
+  </footer>
+
+  <!-- JAVASCRIPT BẢO MẬT & CHỐNG GIAN LẬN -->
+  <script>
+    function processVerification() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      const taskId = urlParams.get('taskId') || 'TASK_DEFAULT';
+      const reward = parseInt(urlParams.get('reward') || '500'); // Mặc định 500 CRD nếu không truyền
+
+      const statusIcon = document.getElementById('statusIcon');
+      const statusTitle = document.getElementById('statusTitle');
+      const statusDesc = document.getElementById('statusDesc');
+      const rewardBadge = document.getElementById('rewardBadge');
+      const rewardAmount = document.getElementById('rewardAmount');
+      const actionArea = document.getElementById('actionArea');
+
+      // 1. KIỂM TRA REFERRER (CHỐNG TRUY CẬP TRỰC TIẾP)
+      const referrer = document.referrer;
+      console.log("Nguồn truy cập:", referrer);
+
+      // 2. KIỂM TRA TOKEN & DANH SÁCH TOKEN ĐÃ SỬ DỤNG (CHỐNG F5 / BẤM TẢI LẠI TRANG)
+      const usedTokens = JSON.parse(localStorage.getItem('usedTokens') || '[]');
+      const completedTaskIds = JSON.parse(localStorage.getItem('completedTaskIds') || '[]');
+
+      setTimeout(() => {
+        // LỖI 1: Không có Token hoặc Token đã dùng rồi (F5 lại trang)
+        if (!token || usedTokens.includes(token)) {
+          showError("Xác minh thất bại!", "Token này không hợp lệ hoặc đã được sử dụng trước đó (Do bạn bấm F5 hoặc tải lại trang).");
+          return;
+        }
+
+        // LỖI 2: Task này tài khoản đã làm rồi
+        if (completedTaskIds.includes(taskId)) {
+          showError("Nhiệm vụ đã hoàn thành!", "Bạn đã nhận thưởng cho nhiệm vụ này rồi. Vui lòng chọn nhiệm vụ khác.");
+          return;
+        }
+
+        // 3. XÁC MINH THÀNH CÔNG -> CỘNG CRD THỰC TẾ & LƯU TOKEN
+        let currentBalance = parseFloat(localStorage.getItem('balance') || '0');
+        let completedTasksCount = parseInt(localStorage.getItem('completedTasks') || '0');
+
+        // Cập nhật số dư & số task
+        currentBalance += reward;
+        completedTasksCount += 1;
+
+        localStorage.setItem('balance', currentBalance.toString());
+        localStorage.setItem('completedTasks', completedTasksCount.toString());
+
+        // Đánh dấu Token & TaskId đã hoàn thành (Khóa gian lận ngay lập tức)
+        usedTokens.push(token);
+        completedTaskIds.push(taskId);
+        localStorage.setItem('usedTokens', JSON.stringify(usedTokens));
+        localStorage.setItem('completedTaskIds', JSON.stringify(completedTaskIds));
+
+        // HIỂN THỊ THÀNH CÔNG
+        statusIcon.className = "w-20 h-20 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-3xl";
+        statusIcon.innerHTML = `<i class="fa-solid fa-circle-check"></i>`;
+        statusTitle.innerText = "Xác minh thành công!";
+        statusTitle.className = "text-xl font-bold text-emerald-400";
+        statusDesc.innerText = "Hệ thống Link4m xác nhận bạn đã hoàn thành vượt liên kết thành công. CRD đã được cộng vào tài khoản.";
+
+        rewardAmount.innerText = `+${reward.toLocaleString('vi-VN')}`;
+        rewardBadge.classList.remove('hidden');
+        actionArea.classList.remove('hidden');
+
+      }, 1500); // Giả lập chờ 1.5s kiểm tra hệ thống
+    }
+
+    function showError(title, message) {
+      document.getElementById('statusIcon').className = "w-20 h-20 mx-auto rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 text-3xl";
+      document.getElementById('statusIcon').innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i>`;
+      document.getElementById('statusTitle').innerText = title;
+      document.getElementById('statusTitle').className = "text-xl font-bold text-rose-400";
+      document.getElementById('statusDesc').innerText = message;
+      document.getElementById('actionArea').classList.remove('hidden');
+    }
+
+    // Chạy khi nạp trang
+    processVerification();
+  </script>
+</body>
+</html>
