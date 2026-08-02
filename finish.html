@@ -23,13 +23,13 @@
     <!-- TIÊU ĐỀ & THÔNG BÁO -->
     <div>
       <h2 class="text-xl font-bold text-slate-100" id="statusTitle">Đang kiểm tra kết quả...</h2>
-      <p class="text-xs text-slate-400 mt-2" id="statusDesc">Hệ thống đang xác minh lượt vượt link từ nhà mạng.</p>
+      <p class="text-xs text-slate-400 mt-2" id="statusDesc">Hệ thống đang xác minh lượt vượt link và địa chỉ IP.</p>
     </div>
 
     <!-- HỘP THƯỞNG -->
     <div id="rewardBox" class="hidden bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4">
       <p class="text-xs text-slate-400">Bạn được cộng thành công</p>
-      <p class="text-2xl font-bold text-emerald-400 my-1" id="rewardAmount">+220 CRD</p>
+      <p class="text-2xl font-bold text-emerald-400 my-1" id="rewardAmount">+0 CRD</p>
       <p class="text-[11px] text-slate-500">Số dư đã được cập nhật vào tài khoản!</p>
     </div>
 
@@ -40,41 +40,71 @@
   </div>
 
   <script>
-    function verifyTaskCompletion() {
+    // Cấu hình mức thưởng và giới hạn tối đa cho từng Task ID
+    const TASK_CONFIG = {
+      'TASK_LINKTOT_TIM_MAPS': { reward: 1000, maxLimit: 2 },
+      'TASK_LINK4M': { reward: 300, maxLimit: 2 },
+      'TASK_LAYMA': { reward: 450, maxLimit: 2 },
+      'TASK_TAPLAYMA': { reward: 200, maxLimit: 2 }
+    };
+
+    async function verifyTaskCompletion() {
       const urlParams = new URLSearchParams(window.location.search);
-      // Lấy taskId từ URL nếu có, mặc định là nhiệm vụ LINKTOT Tìm Maps
       const taskId = urlParams.get('task') || 'TASK_LINKTOT_TIM_MAPS';
       
-      // Mức thưởng cho từng nhiệm vụ
-      const rewardMap = {
-        'TASK_LINKTOT_TIM_MAPS': 1000,
-        'TASK_LINK4M': 300,
-        'TASK_LAYMA': 450,
-        'TASK_TAPLAYMA': 200,
-      };
+      const config = TASK_CONFIG[taskId] || { reward: 220, maxLimit: 2 };
+      const todayStr = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
-      const rewardVal = rewardMap[taskId] || 220;
+      // 1. Lấy địa chỉ IP thật của người dùng
+      let userIP = '127.0.0.1';
+      try {
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        userIP = data.ip;
+      } catch (err) {
+        console.warn("Không thể xác minh IP:", err);
+      }
 
-      // 1. Lấy dữ liệu hiện tại của User từ LocalStorage
+      // 2. Lấy dữ liệu IP Log trong ngày
+      const ipHistoryKey = `ip_log_${todayStr}`;
+      let ipLogs = JSON.parse(localStorage.getItem(ipHistoryKey) || '{}');
+
+      if (!ipLogs[userIP]) ipLogs[userIP] = {};
+      let currentIpTaskDone = ipLogs[userIP][taskId] || 0;
+
+      // 3. CHẶN NẾU TRÙNG IP HOẶC VƯỢT QUÁ GIỚI HẠN
+      if (currentIpTaskDone >= config.maxLimit) {
+        setTimeout(() => {
+          document.getElementById('statusIcon').className = "w-16 h-16 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center mx-auto text-rose-400 text-2xl";
+          document.getElementById('statusIcon').innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+          document.getElementById('statusTitle').innerText = "Cảnh Báo Trùng Mạng / IP!";
+          document.getElementById('statusTitle').className = "text-xl font-bold text-rose-400";
+          document.getElementById('statusDesc').innerText = `Địa chỉ IP của bạn đã hoàn thành tối đa (${config.maxLimit}/${config.maxLimit}) lượt nhiệm vụ này hôm nay. Mọi tài khoản khác trên mạng này đều không được nhận thêm!`;
+        }, 1000);
+        return; // Ngắt quy trình, không cộng điểm
+      }
+
+      // 4. NẾU HỢP LỆ: Tăng đếm IP + Cộng tiền
+      ipLogs[userIP][taskId] = currentIpTaskDone + 1;
+      localStorage.setItem(ipHistoryKey, JSON.stringify(ipLogs));
+
       let userProgress = JSON.parse(localStorage.getItem('userProgress') || '{}');
       let currentBalance = parseFloat(localStorage.getItem('balance') || '0');
 
-      // 2. Cập nhật tiến trình & cộng tiền
       userProgress[taskId] = (userProgress[taskId] || 0) + 1;
-      currentBalance += rewardVal;
+      currentBalance += config.reward;
 
-      // 3. Lưu lại vào LocalStorage
       localStorage.setItem('userProgress', JSON.stringify(userProgress));
       localStorage.setItem('balance', currentBalance.toString());
 
-      // 4. Hiển thị thông báo thành công sau 1.2 giây
+      // 5. Hiển thị thông báo thành công
       setTimeout(() => {
         document.getElementById('statusIcon').className = "w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-400 text-2xl";
         document.getElementById('statusIcon').innerHTML = '<i class="fa-solid fa-circle-check"></i>';
         document.getElementById('statusTitle').innerText = "Xác Nhận Thành Công!";
         document.getElementById('statusTitle').className = "text-xl font-bold text-emerald-400";
         document.getElementById('statusDesc').innerText = "Cảm ơn bạn đã hoàn thành nhiệm vụ vượt link.";
-        document.getElementById('rewardAmount').innerText = `+${rewardVal} CRD`;
+        document.getElementById('rewardAmount').innerText = `+${config.reward} CRD`;
         document.getElementById('rewardBox').classList.remove('hidden');
       }, 1200);
     }
