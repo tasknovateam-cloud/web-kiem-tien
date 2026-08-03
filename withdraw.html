@@ -189,19 +189,48 @@
     const TELEGRAM_CHAT_ID = '8471229803';
 
     // 1. TẢI VÀ HIỂN THỊ DỮ LIỆU BAN ĐẦU
-    function loadData() {
-      const user = localStorage.getItem('username') || 'blackx';
-      const email = localStorage.getItem('userEmail') || 'pryzexxol@gmail.com';
-      const balance = parseFloat(localStorage.getItem('balance') || '0');
+    async function loadData() {
+  const user = localStorage.getItem('username');
+  
+  // 1. Kiểm tra nếu chưa đăng nhập thì đẩy về trang đăng nhập
+  if (!user) {
+    alert('Vui lòng đăng nhập trước!');
+    window.location.href = 'index.html'; // Sửa 'index.html' thành trang đăng nhập của bạn
+    return;
+  }
 
-      document.getElementById('sidebarName').innerText = user;
-      document.getElementById('sidebarEmail').innerText = email;
-      document.getElementById('sidebarAvatar').innerText = user.charAt(0).toUpperCase();
+  try {
+    // 2. Gọi API hỏi Server MongoDB lấy số dư thực tế
+    const res = await fetch(`/api/user/me?username=${user}`);
+    const data = await res.json();
 
-      document.getElementById('currentBalanceDisplay').innerText = `${balance.toLocaleString('vi-VN')} CRD`;
+    if (data.success) {
+      // 3. Cập nhật tên và số dư từ MongoDB lên giao diện
+      if (document.getElementById('sidebarName')) document.getElementById('sidebarName').innerText = data.user.username;
+      if (document.getElementById('sidebarEmail')) document.getElementById('sidebarEmail').innerText = data.user.email || 'User';
+      if (document.getElementById('sidebarAvatar')) document.getElementById('sidebarAvatar').innerText = data.user.username.charAt(0).toUpperCase();
 
-      renderHistory();
+      // Hiển thị số dư thực từ MongoDB
+      const userBalance = data.user.balance;
+      if (document.getElementById('currentBalanceDisplay')) {
+        document.getElementById('currentBalanceDisplay').innerText = `${userBalance.toLocaleString('vi-VN')} CRD`;
+      }
+      
+      // Đồng bộ lại với localStorage
+      localStorage.setItem('balance', userBalance);
+    } else {
+      localStorage.clear();
+      window.location.href = 'index.html';
     }
+  } catch (err) {
+    console.error('Lỗi lấy thông tin user:', err);
+  }
+
+  // Tải lịch sử rút tiền
+  if (typeof renderHistory === 'function') {
+    renderHistory();
+  }
+}
 
     // 2. CHUYỂN ĐỔI PHƯƠNG THỨC RÚT TIỀN
     function toggleMethod(type) {

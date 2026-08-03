@@ -98,7 +98,7 @@
           </div>
           <input type="password" id="loginPass" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 transition">
         </div>
-        <button type="submit" class="w-full py-3 rounded-xl font-bold text-white neon-btn">
+        <button type="submit" id="btnLoginSubmit" class="w-full py-3 rounded-xl font-bold text-white neon-btn">
           Vào Portal TaskNova
         </button>
       </form>
@@ -129,7 +129,7 @@
           <input type="password" id="regPass" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-cyan-500 transition">
         </div>
         
-        <button type="submit" class="w-full py-3 rounded-xl font-bold text-white neon-btn">
+        <button type="submit" id="btnRegSubmit" class="w-full py-3 rounded-xl font-bold text-white neon-btn">
           Tạo Tài Khoản
         </button>
       </form>
@@ -167,12 +167,6 @@
       const email = document.getElementById('regEmail').value.trim().toLowerCase();
       if (!email || !email.includes('@')) {
         alert('⚠️ Vui lòng nhập địa chỉ Gmail hợp lệ!');
-        return;
-      }
-
-      const users = JSON.parse(localStorage.getItem('tasknova_users') || '[]');
-      if (users.some(u => u.email.toLowerCase() === email)) {
-        alert('❌ Gmail này đã được đăng ký! Vui lòng chọn Gmail khác.');
         return;
       }
 
@@ -223,12 +217,14 @@
       }
     }
 
-    function handleRegister(e) {
+    // XỬ LÝ ĐĂNG KÝ VỀ MONGODB
+    async function handleRegister(e) {
       e.preventDefault();
       const rawUser = document.getElementById('regUser').value.trim();
       const email = document.getElementById('regEmail').value.trim().toLowerCase();
       const inputOTP = document.getElementById('regOtpInput').value.trim();
       const password = document.getElementById('regPass').value;
+      const btn = document.getElementById('btnRegSubmit');
 
       if (!currentRegOTP) {
         alert('⚠️ Bạn chưa bấm gửi mã OTP!');
@@ -239,42 +235,75 @@
         return;
       }
 
-      let users = JSON.parse(localStorage.getItem('tasknova_users') || '[]');
-      if (users.some(u => u.username.toLowerCase() === rawUser.toLowerCase())) {
-        alert(`❌ Username "${rawUser}" đã có người đăng ký!`);
-        return;
+      btn.innerText = "⏳ Đang tạo tài khoản...";
+      btn.disabled = true;
+
+      try {
+        // Gửi yêu cầu Đăng ký về Server MongoDB
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: rawUser, email, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          // Lưu thông tin đăng nhập vào máy người dùng
+          localStorage.setItem('username', rawUser);
+          localStorage.setItem('userEmail', email);
+
+          alert('🎉 Đăng ký tài khoản thành công!');
+          window.location.href = 'dashboard.html';
+        } else {
+          alert(`❌ ${data.message || 'Đăng ký thất bại!'}`);
+          btn.innerText = "Tạo Tài Khoản";
+          btn.disabled = false;
+        }
+      } catch (err) {
+        console.error('Lỗi API Đăng ký:', err);
+        alert('❌ Lỗi kết nối đến server!');
+        btn.innerText = "Tạo Tài Khoản";
+        btn.disabled = false;
       }
-
-      users.push({ username: rawUser, email, password });
-      localStorage.setItem('tasknova_users', JSON.stringify(users));
-
-      localStorage.setItem('username', rawUser);
-      localStorage.setItem('userEmail', email);
-
-      alert('🎉 Đăng ký tài khoản thành công!');
-      window.location.href = 'dashboard.html';
     }
 
-    function handleLogin(e) {
+    // XỬ LÝ ĐĂNG NHẬP VỚI MONGODB
+    async function handleLogin(e) {
       e.preventDefault();
-      const userOrEmail = document.getElementById('loginUser').value.trim().toLowerCase();
+      const userOrEmail = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPass').value;
+      const btn = document.getElementById('btnLoginSubmit');
 
-      let users = JSON.parse(localStorage.getItem('tasknova_users') || '[]');
-      const account = users.find(u => u.username.toLowerCase() === userOrEmail || u.email.toLowerCase() === userOrEmail);
+      btn.innerText = "⏳ Đang xác thực...";
+      btn.disabled = true;
 
-      if (!account) {
-        alert('❌ Tài khoản hoặc Gmail chưa tồn tại! Vui lòng đăng ký.');
-        return;
+      try {
+        // Gửi yêu cầu Đăng nhập về Server MongoDB
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ usernameOrEmail: userOrEmail, password: pass })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          // Lưu tên username chuẩn từ MongoDB vào máy người dùng
+          localStorage.setItem('username', data.user.username);
+          localStorage.setItem('userEmail', data.user.email);
+
+          alert('🎉 Đăng nhập thành công!');
+          window.location.href = 'dashboard.html';
+        } else {
+          alert(`❌ ${data.message || 'Tài khoản hoặc mật khẩu không chính xác!'}`);
+          btn.innerText = "Vào Portal TaskNova";
+          btn.disabled = false;
+        }
+      } catch (err) {
+        console.error('Lỗi API Đăng nhập:', err);
+        alert('❌ Lỗi kết nối đến server!');
+        btn.innerText = "Vào Portal TaskNova";
+        btn.disabled = false;
       }
-      if (account.password !== pass) {
-        alert('❌ Mật khẩu không chính xác!');
-        return;
-      }
-
-      localStorage.setItem('username', account.username);
-      localStorage.setItem('userEmail', account.email);
-      window.location.href = 'dashboard.html';
     }
   </script>
 </body>

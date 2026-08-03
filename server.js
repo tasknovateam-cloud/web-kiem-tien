@@ -175,6 +175,29 @@ app.get(/(.*)/, (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// ==================== LẤY THÔNG TIN USER TỪ MONGODB ====================
+app.get('/api/user/me', async (req, res) => {
+  try {
+    const username = req.query.username;
+    if (!username) return res.status(400).json({ success: false, message: 'Thiếu username' });
+
+    // Tìm user trong Database MongoDB
+    const user = await User.findOne({ username });
+    if (!user) return res.status(404).json({ success: false, message: 'Không tìm thấy user' });
+
+    res.json({
+      success: true,
+      user: {
+        username: user.username,
+        email: user.email,
+        balance: user.balance || 0
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
+  }
+});
+
 // Mới: Sử dụng cổng của Render cấp, nếu chạy ở máy cục bộ (local) mới dùng 5000
 const PORT = process.env.PORT || 5000;
 
